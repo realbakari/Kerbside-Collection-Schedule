@@ -23,7 +23,11 @@ const brisbaneCitySuburbs = [
     "Wynnum", "Wynnum West", "Yeerongpilly", "Yeronga", "Zillmere"
 ];
 
+console.log('brisbaneCitySuburbs length:', brisbaneCitySuburbs.length);
+console.log('First few suburbs:', brisbaneCitySuburbs.slice(0, 5));
+
 function fetchData() {
+    console.log('Fetching data...');
     return fetch('dataset/kerbside-large-item-collection-schedule.json')
         .then(response => {
             if (!response.ok) throw new Error('Failed to load data');
@@ -31,6 +35,7 @@ function fetchData() {
         })
         .then(data => {
             allData = data;
+            console.log('Data fetched, length:', allData.length);
             if (!allData || allData.length === 0) {
                 throw new Error('No data received');
             }
@@ -38,14 +43,15 @@ function fetchData() {
             document.getElementById('dataContainer').style.display = 'grid';
             populateWeekFilter();
             renderCards(allData);
-            return data; // Return the data for chaining
+            return data;
         })
         .catch(error => {
+            console.error('Error in fetchData:', error);
             document.getElementById('loading').style.display = 'none';
             const errorDiv = document.getElementById('error');
             errorDiv.style.display = 'block';
             errorDiv.textContent = 'Error loading data: ' + error.message;
-            throw error; // Re-throw the error for further handling if needed
+            throw error;
         });
 }
 
@@ -61,6 +67,7 @@ function populateWeekFilter() {
 }
 
 function renderCards(data) {
+    console.log('renderCards called with', data.length, 'items');
     const dataContainer = document.getElementById('dataContainer');
     if (!dataContainer) {
         console.error('Data container not found');
@@ -72,31 +79,41 @@ function renderCards(data) {
     const endIndex = startIndex + itemsPerPage;
 
     const pageData = data.slice(startIndex, endIndex);
+    console.log('Rendering page data:', pageData);
     const currentDate = new Date();
 
     pageData.forEach(item => {
-        const collectionDate = new Date(item.date_of_collection);
-        const itemsOutDate = new Date(item.items_out_on_footpath);
-        const isCollectionCompleted = collectionDate < currentDate;
-        const isItemsOutCompleted = itemsOutDate < currentDate;
-
         const card = document.createElement('div');
-        card.className = `card ${isCollectionCompleted ? 'completed' : ''}`;
-        card.innerHTML = `
-            <h3><i class="fas fa-map-marker-alt"></i> ${item.suburb}</h3>
-            <p><i class="fas fa-calendar-week"></i> Week: ${item.week}</p>
-            <p class="collection-date ${isCollectionCompleted ? 'completed' : ''}">
-                <i class="fas fa-truck"></i> 
-                <strong>Collection Date:</strong> ${collectionDate.toLocaleDateString()}
-                ${isCollectionCompleted ? '<i class="fas fa-check-circle completed-icon"></i>' : ''}
-            </p>
-            <p class="items-out-date ${isItemsOutCompleted ? 'completed' : ''}">
-                <i class="fas fa-box"></i> 
-                <strong>Items Out Date:</strong> ${itemsOutDate.toLocaleDateString()}
-                ${isItemsOutCompleted ? '<i class="fas fa-check-circle completed-icon"></i>' : ''}
-            </p>
-            <p class="countdown" data-collection-date="${item.date_of_collection}"></p>
-        `;
+        card.className = 'card';
+        
+        if (item.isPlaceholder) {
+            card.innerHTML = `
+                <h3><i class="fas fa-map-marker-alt"></i> ${item.suburb}</h3>
+                <p>No collection data available for this suburb.</p>
+            `;
+        } else {
+            const collectionDate = new Date(item.date_of_collection);
+            const itemsOutDate = new Date(item.items_out_on_footpath);
+            const isCollectionCompleted = collectionDate < currentDate;
+            const isItemsOutCompleted = itemsOutDate < currentDate;
+
+            card.innerHTML = `
+                <h3><i class="fas fa-map-marker-alt"></i> ${item.suburb}</h3>
+                <p><i class="fas fa-calendar-week"></i> Week: ${item.week}</p>
+                <p class="collection-date ${isCollectionCompleted ? 'completed' : ''}">
+                    <i class="fas fa-truck"></i> 
+                    <strong>Collection Date:</strong> ${collectionDate.toLocaleDateString()}
+                    ${isCollectionCompleted ? '<i class="fas fa-check-circle completed-icon"></i>' : ''}
+                </p>
+                <p class="items-out-date ${isItemsOutCompleted ? 'completed' : ''}">
+                    <i class="fas fa-box"></i> 
+                    <strong>Items Out Date:</strong> ${itemsOutDate.toLocaleDateString()}
+                    ${isItemsOutCompleted ? '<i class="fas fa-check-circle completed-icon"></i>' : ''}
+                </p>
+                <p class="countdown" data-collection-date="${item.date_of_collection}"></p>
+            `;
+        }
+        
         dataContainer.appendChild(card);
     });
 
@@ -143,16 +160,18 @@ function renderPagination(totalItems) {
 }
 
 function filterData() {
+    console.log('filterData called');
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    console.log('Search term:', searchTerm);
     const weekFilter = document.getElementById('weekFilter').value;
     const dateFilter = document.getElementById('dateFilter').value;
     const completionFilter = document.getElementById('completionFilter').value;
     const currentDate = new Date();
 
-    return allData.filter(item => {
+    // First, filter the allData
+    const filteredData = allData.filter(item => {
         const matchesSearch = item.suburb.toLowerCase().includes(searchTerm) ||
-            (item.suburb_list && item.suburb_list.toLowerCase().includes(searchTerm)) ||
-            brisbaneCitySuburbs.some(suburb => suburb.toLowerCase().includes(searchTerm));
+            (item.suburb_list && item.suburb_list.toLowerCase().includes(searchTerm));
         const matchesWeek = weekFilter === '' || item.week.toString() === weekFilter;
         const matchesDate = dateFilter === '' || new Date(item.date_of_collection).toISOString().split('T')[0] === dateFilter;
         
@@ -164,6 +183,30 @@ function filterData() {
 
         return matchesSearch && matchesWeek && matchesDate && matchesCompletion;
     });
+
+    // Then, find matching suburbs from brisbaneCitySuburbs
+    const matchingSuburbs = brisbaneCitySuburbs.filter(suburb => 
+        suburb.toLowerCase().includes(searchTerm)
+    );
+
+    console.log('Matching suburbs:', matchingSuburbs);
+
+    // Create placeholder data for matching suburbs not in allData
+    const placeholderData = matchingSuburbs
+        .filter(suburb => !filteredData.some(item => item.suburb.toLowerCase() === suburb.toLowerCase()))
+        .map(suburb => ({
+            suburb: suburb,
+            week: 'N/A',
+            date_of_collection: 'N/A',
+            items_out_on_footpath: 'N/A',
+            isPlaceholder: true
+        }));
+
+    // Combine filtered data and placeholder data
+    const combinedData = [...filteredData, ...placeholderData];
+
+    console.log('Combined data length:', combinedData.length);
+    return combinedData;
 }
 
 function clearSearch() {
@@ -197,6 +240,7 @@ function sortData(data) {
 }
 
 function filterAndSortData() {
+    console.log('filterAndSortData called');
     let filteredData = filterData();
     filteredData = sortData(filteredData);
     renderCards(filteredData);
@@ -482,7 +526,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Add event listeners only if elements exist
-    if (elements.searchInput) elements.searchInput.addEventListener('input', filterAndSortData);
+    if (elements.searchInput) {
+        console.log('Search input found, adding event listener');
+        elements.searchInput.addEventListener('input', filterAndSortData);
+    } else {
+        console.error('Search input not found');
+    }
     if (elements.weekFilter) elements.weekFilter.addEventListener('change', filterAndSortData);
     if (elements.dateFilter) elements.dateFilter.addEventListener('change', filterAndSortData);
     if (elements.completionFilter) elements.completionFilter.addEventListener('change', filterAndSortData);
