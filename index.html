@@ -95,14 +95,14 @@
         </section>
         <div id="feedbackSystem" class="feedback-system">
             <h2>Feedback</h2>
-            <form id="feedbackForm">
-                <select id="feedbackType" required>
+            <form id="feedbackForm" action="https://formspree.io/f/xovardpb" method="POST">
+                <select id="feedbackType" name="feedbackType" required>
                     <option value="">Select feedback type</option>
                     <option value="suggestion">Suggestion</option>
                     <option value="issue">Report an Issue</option>
                     <option value="other">Other</option>
                 </select>
-                <textarea id="feedbackContent" placeholder="Enter your feedback here" required></textarea>
+                <textarea id="feedbackContent" name="feedbackContent" placeholder="Enter your feedback here" required></textarea>
                 <button type="submit">Submit Feedback</button>
             </form>
         </div>

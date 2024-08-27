@@ -390,15 +390,31 @@ function exportToCSV() {
 
 function handleFeedback(e) {
     e.preventDefault();
-    const feedbackType = document.getElementById('feedbackType').value;
-    const feedbackContent = document.getElementById('feedbackContent').value;
-    
-    // Here you would typically send this data to your server
-    console.log('Feedback received:', { type: feedbackType, content: feedbackContent });
-    
-    // For now, we'll just show an alert
-    alert('Thank you for your feedback!');
-    e.target.reset();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: form.method,
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            alert('Thank you for your feedback!');
+            form.reset();
+        } else {
+            response.json().then(data => {
+                if (Object.hasOwn(data, 'errors')) {
+                    alert(data["errors"].map(error => error["message"]).join(", "));
+                } else {
+                    alert("Oops! There was a problem submitting your form");
+                }
+            })
+        }
+    }).catch(error => {
+        alert("Oops! There was a problem submitting your form");
+    });
 }
 
 function populateHistoricalSuburbs() {
