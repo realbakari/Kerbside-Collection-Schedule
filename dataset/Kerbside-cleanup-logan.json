@@ -1,0 +1,380 @@
+[
+    {
+      "week": 1,
+      "suburb": "Woodridge",
+      "date_of_collection": "2024-08-19",
+      "items_out_on_footpath": "2024-08-18",
+      "suburb_list": "Woodridge"
+    },
+    {
+      "week": 1,
+      "suburb": "Logan Central",
+      "date_of_collection": "2024-08-19",
+      "items_out_on_footpath": "2024-08-18",
+      "suburb_list": "Logan Central"
+    },
+    {
+      "week": 2,
+      "suburb": "Kingston",
+      "date_of_collection": "2024-09-02",
+      "items_out_on_footpath": "2024-09-01",
+      "suburb_list": "Kingston"
+    },
+    {
+      "week": 2,
+      "suburb": "Loganlea",
+      "date_of_collection": "2024-09-02",
+      "items_out_on_footpath": "2024-09-01",
+      "suburb_list": "Loganlea"
+    },
+    {
+      "week": 3,
+      "suburb": "Berrinba",
+      "date_of_collection": "2024-09-16",
+      "items_out_on_footpath": "2024-09-15",
+      "suburb_list": "Berrinba"
+    },
+    {
+      "week": 3,
+      "suburb": "Marsden",
+      "date_of_collection": "2024-09-16",
+      "items_out_on_footpath": "2024-09-15",
+      "suburb_list": "Marsden"
+    },
+    {
+      "week": 4,
+      "suburb": "Slacks Creek",
+      "date_of_collection": "2024-09-30",
+      "items_out_on_footpath": "2024-09-29",
+      "suburb_list": "Slacks Creek"
+    },
+    {
+      "week": 4,
+      "suburb": "Meadowbrook",
+      "date_of_collection": "2024-09-30",
+      "items_out_on_footpath": "2024-09-29",
+      "suburb_list": "Meadowbrook"
+    },
+    {
+      "week": 5,
+      "suburb": "Heritage Park",
+      "date_of_collection": "2024-10-14",
+      "items_out_on_footpath": "2024-10-13",
+      "suburb_list": "Heritage Park"
+    },
+    {
+      "week": 5,
+      "suburb": "Crestmead",
+      "date_of_collection": "2024-10-14",
+      "items_out_on_footpath": "2024-10-13",
+      "suburb_list": "Crestmead"
+    },
+    {
+      "week": 6,
+      "suburb": "Browns Plains",
+      "date_of_collection": "2024-10-28",
+      "items_out_on_footpath": "2024-10-27",
+      "suburb_list": "Browns Plains"
+    },
+    {
+      "week": 6,
+      "suburb": "Regents Park",
+      "date_of_collection": "2024-10-28",
+      "items_out_on_footpath": "2024-10-27",
+      "suburb_list": "Regents Park"
+    },
+    {
+      "week": 7,
+      "suburb": "Hillcrest",
+      "date_of_collection": "2024-11-11",
+      "items_out_on_footpath": "2024-11-10",
+      "suburb_list": "Hillcrest"
+    },
+    {
+      "week": 7,
+      "suburb": "Boronia Heights",
+      "date_of_collection": "2024-11-11",
+      "items_out_on_footpath": "2024-11-10",
+      "suburb_list": "Boronia Heights"
+    },
+    {
+      "week": 7,
+      "suburb": "Forestdale",
+      "date_of_collection": "2024-11-11",
+      "items_out_on_footpath": "2024-11-10",
+      "suburb_list": "Forestdale"
+    },
+    {
+      "week": 8,
+      "suburb": "Greenbank",
+      "date_of_collection": "2024-12-02",
+      "items_out_on_footpath": "2024-12-01",
+      "suburb_list": "Greenbank"
+    },
+    {
+      "week": 8,
+      "suburb": "New Beith",
+      "date_of_collection": "2024-12-02",
+      "items_out_on_footpath": "2024-12-01",
+      "suburb_list": "New Beith"
+    },
+    {
+      "week": 9,
+      "suburb": "Veresdale Scrub",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "Veresdale Scrub"
+    },
+    {
+      "week": 9,
+      "suburb": "Veresdale",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "Veresdale"
+    },
+    {
+      "week": 9,
+      "suburb": "Cedar Vale",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "Cedar Vale"
+    },
+    {
+      "week": 9,
+      "suburb": "Mundoolun",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "Mundoolun"
+    },
+    {
+      "week": 9,
+      "suburb": "Cedar Grove",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "Cedar Grove"
+    },
+    {
+      "week": 9,
+      "suburb": "Woodhill",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "Woodhill"
+    },
+    {
+      "week": 9,
+      "suburb": "North Maclean",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "North Maclean"
+    },
+    {
+      "week": 9,
+      "suburb": "South Maclean",
+      "date_of_collection": "2025-01-06",
+      "items_out_on_footpath": "2025-01-05",
+      "suburb_list": "South Maclean"
+    },
+    {
+      "week": 10,
+      "suburb": "Jimboomba",
+      "date_of_collection": "2025-01-20",
+      "items_out_on_footpath": "2025-01-19",
+      "suburb_list": "Jimboomba"
+    },
+    {
+      "week": 10,
+      "suburb": "Riverbend",
+      "date_of_collection": "2025-01-20",
+      "items_out_on_footpath": "2025-01-19",
+      "suburb_list": "Riverbend"
+    },
+    {
+      "week": 10,
+      "suburb": "Glenlogan",
+      "date_of_collection": "2025-01-20",
+      "items_out_on_footpath": "2025-01-19",
+      "suburb_list": "Glenlogan"
+    },
+    {
+      "week": 10,
+      "suburb": "Flagstone",
+      "date_of_collection": "2025-01-20",
+      "items_out_on_footpath": "2025-01-19",
+      "suburb_list": "Flagstone"
+    },
+    {
+      "week": 11,
+      "suburb": "Munruben",
+      "date_of_collection": "2025-02-03",
+      "items_out_on_footpath": "2025-02-02",
+      "suburb_list": "Munruben"
+    },
+    {
+      "week": 11,
+      "suburb": "Park Ridge",
+      "date_of_collection": "2025-02-03",
+      "items_out_on_footpath": "2025-02-02",
+      "suburb_list": "Park Ridge"
+    },
+    {
+      "week": 11,
+      "suburb": "Park Ridge South",
+      "date_of_collection": "2025-02-03",
+      "items_out_on_footpath": "2025-02-02",
+      "suburb_list": "Park Ridge South"
+    },
+    {
+      "week": 12,
+      "suburb": "Stockleigh",
+      "date_of_collection": "2025-02-17",
+      "items_out_on_footpath": "2025-02-16",
+      "suburb_list": "Stockleigh"
+    },
+    {
+      "week": 12,
+      "suburb": "Chambers Flat",
+      "date_of_collection": "2025-02-17",
+      "items_out_on_footpath": "2025-02-16",
+      "suburb_list": "Chambers Flat"
+    },
+    {
+      "week": 12,
+      "suburb": "Buccan",
+      "date_of_collection": "2025-02-17",
+      "items_out_on_footpath": "2025-02-16",
+      "suburb_list": "Buccan"
+    },
+    {
+      "week": 12,
+      "suburb": "Logan Village",
+      "date_of_collection": "2025-02-17",
+      "items_out_on_footpath": "2025-02-16",
+      "suburb_list": "Logan Village"
+    },
+    {
+      "week": 13,
+      "suburb": "Yarrabilba",
+      "date_of_collection": "2025-03-03",
+      "items_out_on_footpath": "2025-03-02",
+      "suburb_list": "Yarrabilba"
+    },
+    {
+      "week": 13,
+      "suburb": "Tamborine",
+      "date_of_collection": "2025-03-03",
+      "items_out_on_footpath": "2025-03-02",
+      "suburb_list": "Tamborine"
+    },
+    {
+      "week": 13,
+      "suburb": "Cedar Creek",
+      "date_of_collection": "2025-03-03",
+      "items_out_on_footpath": "2025-03-02",
+      "suburb_list": "Cedar Creek"
+    },
+    {
+      "week": 13,
+      "suburb": "Kairabah",
+      "date_of_collection": "2025-03-03",
+      "items_out_on_footpath": "2025-03-02",
+      "suburb_list": "Kairabah"
+    },
+    {
+      "week": 14,
+      "suburb": "Logan Reserve",
+      "date_of_collection": "2025-03-24",
+      "items_out_on_footpath": "2025-03-23",
+      "suburb_list": "Logan Reserve"
+    },
+    {
+      "week": 14,
+      "suburb": "Waterford",
+      "date_of_collection": "2025-03-24",
+      "items_out_on_footpath": "2025-03-23",
+      "suburb_list": "Waterford"
+    },
+    {
+      "week": 14,
+      "suburb": "Waterford West",
+      "date_of_collection": "2025-03-24",
+      "items_out_on_footpath": "2025-03-23",
+      "suburb_list": "Waterford West"
+    },
+    {
+      "week": 15,
+      "suburb": "Rochedale South - All properties north of Underwood Road",
+      "date_of_collection": "2025-04-07",
+      "items_out_on_footpath": "2025-04-06",
+      "suburb_list": "Rochedale South - All properties north of Underwood Road"
+    },
+    {
+      "week": 15,
+      "suburb": "Priestdale",
+      "date_of_collection": "2025-04-07",
+      "items_out_on_footpath": "2025-04-06",
+      "suburb_list": "Priestdale"
+    },
+    {
+      "week": 16,
+      "suburb": "Rochedale South - All properties south of Underwood Road",
+      "date_of_collection": "2025-04-28",
+      "items_out_on_footpath": "2025-04-27",
+      "suburb_list": "Rochedale South - All properties south of Underwood Road"
+    },
+    {
+      "week": 17,
+      "suburb": "Springwood",
+      "date_of_collection": "2025-05-12",
+      "items_out_on_footpath": "2025-05-11",
+      "suburb_list": "Springwood"
+    },
+    {
+      "week": 17,
+      "suburb": "Underwood",
+      "date_of_collection": "2025-05-12",
+      "items_out_on_footpath": "2025-05-11",
+      "suburb_list": "Underwood"
+    },
+    {
+      "week": 18,
+      "suburb": "Daisy Hill",
+      "date_of_collection": "2025-05-26",
+      "items_out_on_footpath": "2025-05-25",
+      "suburb_list": "Daisy Hill"
+    },
+    {
+      "week": 18,
+      "suburb": "Shailer Park",
+      "date_of_collection": "2025-05-26",
+      "items_out_on_footpath": "2025-05-25",
+      "suburb_list": "Shailer Park"
+    },
+    {
+      "week": 19,
+      "suburb": "Carbrook",
+      "date_of_collection": "2025-06-09",
+      "items_out_on_footpath": "2025-06-08",
+      "suburb_list": "Carbrook"
+    },
+    {
+      "week": 19,
+      "suburb": "Cornubia",
+      "date_of_collection": "2025-06-09",
+      "items_out_on_footpath": "2025-06-08",
+      "suburb_list": "Cornubia"
+    },
+    {
+      "week": 19,
+      "suburb": "Loganholme",
+      "date_of_collection": "2025-06-09",
+      "items_out_on_footpath": "2025-06-08",
+      "suburb_list": "Loganholme"
+    },
+    {
+      "week": 19,
+      "suburb": "Tanah Merah",
+      "date_of_collection": "2025-06-09",
+      "items_out_on_footpath": "2025-06-08",
+      "suburb_list": "Tanah Merah"
+    }
+  ]

@@ -23,18 +23,36 @@ const brisbaneCitySuburbs = [
     "Wynnum", "Wynnum West", "Yeerongpilly", "Yeronga", "Zillmere"
 ];
 
+const loganCitySuburbs = [
+    "Woodridge", "Logan Central", "Kingston", "Loganlea", "Berrinba", "Marsden",
+    "Slacks Creek", "Meadowbrook", "Heritage Park", "Crestmead", "Browns Plains",
+    "Regents Park", "Hillcrest", "Boronia Heights", "Forestdale", "Greenbank",
+    "New Beith", "Veresdale Scrub", "Veresdale", "Cedar Vale", "Mundoolun",
+    "Cedar Grove", "Woodhill", "North Maclean", "South Maclean", "Jimboomba",
+    "Riverbend", "Glenlogan", "Flagstone", "Munruben", "Park Ridge", "Park Ridge South",
+    "Stockleigh", "Chambers Flat", "Buccan", "Logan Village", "Yarrabilba", "Tamborine",
+    "Cedar Creek", "Kairabah", "Logan Reserve", "Waterford", "Waterford West",
+    "Rochedale South", "Priestdale", "Springwood", "Underwood", "Daisy Hill",
+    "Shailer Park", "Carbrook", "Cornubia", "Loganholme", "Tanah Merah"
+];
+
+const allSuburbs = [...new Set([...brisbaneCitySuburbs, ...loganCitySuburbs])];
+
 console.log('brisbaneCitySuburbs length:', brisbaneCitySuburbs.length);
 console.log('First few suburbs:', brisbaneCitySuburbs.slice(0, 5));
 
 function fetchData() {
     console.log('Fetching data...');
-    return fetch('dataset/kerbside-large-item-collection-schedule.json')
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load data');
-            return response.json();
-        })
-        .then(data => {
-            allData = data;
+    const brisbaneFetch = fetch('dataset/kerbside-large-item-collection-schedule.json').then(response => response.json());
+    const loganFetch = fetch('dataset/Kerbside-cleanup-logan.json').then(response => response.json());
+
+    return Promise.all([brisbaneFetch, loganFetch])
+        .then(([brisbaneData, loganData]) => {
+            // Add a source property to each item
+            brisbaneData = brisbaneData.map(item => ({...item, source: 'Brisbane'}));
+            loganData = loganData.map(item => ({...item, source: 'Logan'}));
+
+            allData = [...brisbaneData, ...loganData];
             console.log('Data fetched, length:', allData.length);
             if (!allData || allData.length === 0) {
                 throw new Error('No data received');
@@ -43,7 +61,7 @@ function fetchData() {
             document.getElementById('dataContainer').style.display = 'grid';
             populateWeekFilter();
             renderCards(allData);
-            return data;
+            return allData;
         })
         .catch(error => {
             console.error('Error in fetchData:', error);
@@ -58,6 +76,7 @@ function fetchData() {
 function populateWeekFilter() {
     const weekFilter = document.getElementById('weekFilter');
     const weeks = [...new Set(allData.map(item => item.week))].sort((a, b) => a - b);
+    weekFilter.innerHTML = '<option value="">All Weeks</option>';
     weeks.forEach(week => {
         const option = document.createElement('option');
         option.value = week;
@@ -99,6 +118,7 @@ function renderCards(data) {
 
             card.innerHTML = `
                 <h3><i class="fas fa-map-marker-alt"></i> ${item.suburb}</h3>
+                <p><i class="fas fa-city"></i> ${item.source} City Council</p>
                 <p><i class="fas fa-calendar-week"></i> Week: ${item.week}</p>
                 <p class="collection-date ${isCollectionCompleted ? 'completed' : ''}">
                     <i class="fas fa-truck"></i> 
@@ -170,8 +190,7 @@ function filterData() {
 
     // First, filter the allData
     const filteredData = allData.filter(item => {
-        const matchesSearch = item.suburb.toLowerCase().includes(searchTerm) ||
-            (item.suburb_list && item.suburb_list.toLowerCase().includes(searchTerm));
+        const matchesSearch = item.suburb.toLowerCase().includes(searchTerm);
         const matchesWeek = weekFilter === '' || item.week.toString() === weekFilter;
         const matchesDate = dateFilter === '' || new Date(item.date_of_collection).toISOString().split('T')[0] === dateFilter;
         
@@ -184,8 +203,8 @@ function filterData() {
         return matchesSearch && matchesWeek && matchesDate && matchesCompletion;
     });
 
-    // Then, find matching suburbs from brisbaneCitySuburbs
-    const matchingSuburbs = brisbaneCitySuburbs.filter(suburb => 
+    // Then, find matching suburbs from allSuburbs
+    const matchingSuburbs = allSuburbs.filter(suburb => 
         suburb.toLowerCase().includes(searchTerm)
     );
 
@@ -199,7 +218,8 @@ function filterData() {
             week: 'N/A',
             date_of_collection: 'N/A',
             items_out_on_footpath: 'N/A',
-            isPlaceholder: true
+            isPlaceholder: true,
+            source: 'Unknown'
         }));
 
     // Combine filtered data and placeholder data
@@ -260,12 +280,12 @@ function populateSuburbList() {
     // Clear existing options
     suburbList.innerHTML = '';
     
-    brisbaneCitySuburbs.forEach(suburb => {
+    allSuburbs.forEach(suburb => {
         const option = document.createElement('option');
         option.value = suburb;
         suburbList.appendChild(option);
     });
-    console.log('Suburb list populated with', brisbaneCitySuburbs.length, 'suburbs');
+    console.log('Suburb list populated with', allSuburbs.length, 'suburbs');
 }
 
 function savePreferences() {
@@ -543,6 +563,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.exportPDF) elements.exportPDF.addEventListener('click', exportToPDF);
     if (elements.feedbackForm) elements.feedbackForm.addEventListener('submit', handleFeedback);
     if (elements.historicalSuburb) elements.historicalSuburb.addEventListener('change', updateHistoricalStats);
+
+    // Notification handling
+    const notification = document.getElementById('notification');
+    const closeNotification = document.getElementById('closeNotification');
+
+    if (closeNotification) {
+        closeNotification.addEventListener('click', () => {
+            notification.style.display = 'none';
+            localStorage.setItem('loganNotificationClosed', 'true');
+        });
+    }
+
+    // Check if the notification has been closed before
+    if (localStorage.getItem('loganNotificationClosed') !== 'true') {
+        notification.style.display = 'flex';
+    } else {
+        notification.style.display = 'none';
+    }
 
     fetchData()
         .then(() => {

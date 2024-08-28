@@ -470,3 +470,44 @@ main {
 #feedbackForm button:hover {
     background-color: var(--primary-color);
 }
+
+.notification {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.notification span {
+    flex-grow: 1;
+    font-size: 16px;
+}
+
+.notification i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.notification button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 10px;
+    transition: opacity 0.3s ease;
+}
+
+.notification button:hover {
+    opacity: 0.8;
+}
