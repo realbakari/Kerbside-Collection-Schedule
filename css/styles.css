@@ -1338,6 +1338,136 @@ button:disabled, .btn:disabled {
     background: hsl(var(--success) / 0.9);
 }
 
+/* PWA Install Button */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.install-button {
+    background: hsl(var(--success));
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.install-button:hover {
+    background: hsl(var(--success) / 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.install-button:active {
+    transform: translateY(0);
+}
+
+/* PWA Notification */
+.pwa-notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    z-index: 1000;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.pwa-notification-success {
+    border-left: 4px solid hsl(var(--success));
+}
+
+.pwa-notification-info {
+    border-left: 4px solid hsl(var(--info));
+}
+
+.pwa-notification-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: hsl(var(--foreground));
+}
+
+.pwa-notification-content i {
+    font-size: 1.25rem;
+}
+
+.pwa-notification-success .pwa-notification-content i {
+    color: hsl(var(--success));
+}
+
+.pwa-notification-info .pwa-notification-content i {
+    color: hsl(var(--info));
+}
+
+.pwa-notification button {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: hsl(var(--muted-foreground));
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.pwa-notification button:hover {
+    background: hsl(var(--muted) / 0.3);
+}
+
+/* Offline Indicator */
+body.offline::before {
+    content: '⚠️ Offline Mode - Using Cached Data';
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: hsl(45 93% 47%);
+    color: hsl(0 0% 0%);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
 /* Print Styles */
 @media print {
     .search-section,

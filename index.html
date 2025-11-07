@@ -23,6 +23,14 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚛</text></svg>">
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kerbside">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%230f172a'/><text x='50%' y='50%' font-size='110' text-anchor='middle' dominant-baseline='central'>🚛</text></svg>">
+
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
@@ -40,8 +48,15 @@
         <button id="closeNotification" aria-label="Close notification">&times;</button>
     </div>
     <header>
-        <h1>Kerbside Collection Schedule</h1>
-        <p style="margin-top: 0.5rem; font-size: 0.95rem; opacity: 0.9;">Brisbane & Logan City Councils</p>
+        <div class="header-content">
+            <div>
+                <h1>Kerbside Collection Schedule</h1>
+                <p style="margin-top: 0.5rem; font-size: 0.95rem; opacity: 0.9;">Brisbane & Logan City Councils</p>
+            </div>
+            <button id="installApp" class="install-button" style="display: none;" aria-label="Install app">
+                <i class="fas fa-download"></i> Install App
+            </button>
+        </div>
     </header>
     <main>
         <section class="info-section">
