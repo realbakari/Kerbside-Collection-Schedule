@@ -41,16 +41,15 @@ const brisbaneCitySuburbs = [
 ];
 
 const loganCitySuburbs = [
-    "Woodridge", "Logan Central", "Kingston", "Loganlea", "Berrinba", "Marsden",
-    "Slacks Creek", "Meadowbrook", "Heritage Park", "Crestmead", "Browns Plains",
-    "Regents Park", "Hillcrest", "Boronia Heights", "Forestdale", "Greenbank",
-    "New Beith", "Veresdale Scrub", "Veresdale", "Cedar Vale", "Mundoolun",
-    "Cedar Grove", "Woodhill", "North Maclean", "South Maclean", "Jimboomba",
-    "Riverbend", "Glenlogan", "Flagstone", "Munruben", "Park Ridge", "Park Ridge South",
-    "Stockleigh", "Chambers Flat", "Buccan", "Logan Village", "Yarrabilba", "Tamborine",
-    "Cedar Creek", "Kairabah", "Logan Reserve", "Waterford", "Waterford West",
-    "Rochedale South", "Priestdale", "Springwood", "Underwood", "Daisy Hill",
-    "Shailer Park", "Carbrook", "Cornubia", "Loganholme", "Tanah Merah"
+    "Heritage Park", "Crestmead", "Browns Plains", "Regents Park",
+    "Greenbank", "New Beith", "Hillcrest", "Boronia Heights", "Forestdale",
+    "Veresdale Scrub", "Veresdale", "Cedar Vale", "Mundoolun", "Cedar Grove",
+    "Woodhill", "North Maclean", "South Maclean", "Jimboomba", "Riverbend",
+    "Glenlogan", "Flagstone", "Munruben", "Park Ridge", "Park Ridge South",
+    "Stockleigh", "Chambers Flat", "Buccan", "Logan Village", "Yarrabilba",
+    "Tamborine", "Cedar Creek", "Kairabah", "Logan Reserve", "Waterford",
+    "Waterford West", "Rochedale South", "Priestdale", "Springwood", "Underwood",
+    "Daisy Hill", "Shailer Park", "Carbrook", "Cornubia", "Loganholme", "Tanah Merah"
 ];
 
 const allSuburbs = [...new Set([...brisbaneCitySuburbs, ...loganCitySuburbs])];
@@ -636,23 +635,365 @@ function initNotification() {
     if (closeNotification) {
         closeNotification.addEventListener('click', () => {
             notification.style.display = 'none';
-            safeLocalStorageSet('loganNotificationClosed', 'true');
+            safeLocalStorageSet('loganNotification2025Closed', 'true');
         });
     }
 
-    if (safeLocalStorageGet('loganNotificationClosed') !== 'true') {
+    if (safeLocalStorageGet('loganNotification2025Closed') !== 'true') {
         notification.style.display = 'flex';
 
         // Auto-dismiss after 10 seconds
         setTimeout(() => {
             if (notification.style.display !== 'none') {
                 notification.style.display = 'none';
-                safeLocalStorageSet('loganNotificationClosed', 'true');
+                safeLocalStorageSet('loganNotification2025Closed', 'true');
             }
         }, 10000);
     } else {
         notification.style.display = 'none';
     }
+}
+
+// Data Visualizations
+let charts = {
+    weekly: null,
+    council: null,
+    progress: null,
+    monthly: null
+};
+
+function updateStatistics() {
+    const currentDate = normalizeDate(new Date());
+    const currentWeekStart = new Date();
+    const currentWeekEnd = new Date();
+    currentWeekEnd.setDate(currentWeekEnd.getDate() + 7);
+
+    // Calculate statistics
+    const uniqueSuburbs = [...new Set(allData.map(item => item.suburb))];
+    const completed = allData.filter(item => normalizeDate(item.date_of_collection) < currentDate);
+    const upcoming = allData.filter(item => normalizeDate(item.date_of_collection) >= currentDate);
+    const thisWeek = allData.filter(item => {
+        const collectionDate = new Date(item.date_of_collection);
+        return collectionDate >= currentWeekStart && collectionDate <= currentWeekEnd;
+    });
+
+    // Update stat cards with animation
+    animateValue('totalSuburbs', 0, uniqueSuburbs.length, 1000);
+    animateValue('completedCollections', 0, completed.length, 1000);
+    animateValue('upcomingCollections', 0, upcoming.length, 1000);
+    animateValue('thisWeekCollections', 0, thisWeek.length, 1000);
+}
+
+function animateValue(id, start, end, duration) {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= end) {
+            element.textContent = Math.round(end);
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.round(current);
+        }
+    }, 16);
+}
+
+function initCharts() {
+    if (typeof Chart === 'undefined') {
+        log('Chart.js not loaded');
+        return;
+    }
+
+    // Chart.js default configuration
+    Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif";
+    Chart.defaults.color = 'hsl(215.4, 16.3%, 46.9%)';
+
+    createWeeklyDistributionChart();
+    createCouncilComparisonChart();
+    createProgressChart();
+    createMonthlyDistributionChart();
+}
+
+function createWeeklyDistributionChart() {
+    const ctx = document.getElementById('weeklyDistributionChart');
+    if (!ctx) return;
+
+    // Group data by week
+    const weekData = {};
+    allData.forEach(item => {
+        weekData[item.week] = (weekData[item.week] || 0) + 1;
+    });
+
+    const weeks = Object.keys(weekData).sort((a, b) => parseInt(a) - parseInt(b));
+    const counts = weeks.map(week => weekData[week]);
+
+    if (charts.weekly) {
+        charts.weekly.destroy();
+    }
+
+    charts.weekly = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: weeks.map(w => `Week ${w}`),
+            datasets: [{
+                label: 'Collections',
+                data: counts,
+                backgroundColor: 'hsl(221.2, 83.2%, 53.3%, 0.8)',
+                borderColor: 'hsl(221.2, 83.2%, 53.3%)',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'hsl(222.2, 47.4%, 11.2%)',
+                    padding: 12,
+                    borderRadius: 8,
+                    titleFont: {
+                        size: 14,
+                        weight: 600
+                    },
+                    bodyFont: {
+                        size: 13
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    },
+                    grid: {
+                        color: 'hsl(214.3, 31.8%, 91.4%)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createCouncilComparisonChart() {
+    const ctx = document.getElementById('councilComparisonChart');
+    if (!ctx) return;
+
+    const brisbaneCount = allData.filter(item => item.source === 'Brisbane').length;
+    const loganCount = allData.filter(item => item.source === 'Logan').length;
+
+    if (charts.council) {
+        charts.council.destroy();
+    }
+
+    charts.council = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Brisbane City', 'Logan City'],
+            datasets: [{
+                data: [brisbaneCount, loganCount],
+                backgroundColor: [
+                    'hsl(221.2, 83.2%, 53.3%, 0.8)',
+                    'hsl(142.1, 76.2%, 36.3%, 0.8)'
+                ],
+                borderColor: [
+                    'hsl(221.2, 83.2%, 53.3%)',
+                    'hsl(142.1, 76.2%, 36.3%)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12,
+                            weight: 500
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'hsl(222.2, 47.4%, 11.2%)',
+                    padding: 12,
+                    borderRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return `${context.label}: ${context.parsed} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createProgressChart() {
+    const ctx = document.getElementById('progressChart');
+    if (!ctx) return;
+
+    const currentDate = normalizeDate(new Date());
+    const completed = allData.filter(item => normalizeDate(item.date_of_collection) < currentDate).length;
+    const upcoming = allData.length - completed;
+
+    if (charts.progress) {
+        charts.progress.destroy();
+    }
+
+    charts.progress = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Completed', 'Upcoming'],
+            datasets: [{
+                data: [completed, upcoming],
+                backgroundColor: [
+                    'hsl(142.1, 76.2%, 36.3%, 0.8)',
+                    'hsl(214.3, 31.8%, 91.4%, 0.8)'
+                ],
+                borderColor: [
+                    'hsl(142.1, 76.2%, 36.3%)',
+                    'hsl(214.3, 31.8%, 91.4%)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12,
+                            weight: 500
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'hsl(222.2, 47.4%, 11.2%)',
+                    padding: 12,
+                    borderRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return `${context.label}: ${context.parsed} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createMonthlyDistributionChart() {
+    const ctx = document.getElementById('monthlyDistributionChart');
+    if (!ctx) return;
+
+    // Group data by month
+    const monthData = {};
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    allData.forEach(item => {
+        const date = new Date(item.date_of_collection);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const monthLabel = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+        if (!monthData[monthKey]) {
+            monthData[monthKey] = { label: monthLabel, count: 0 };
+        }
+        monthData[monthKey].count++;
+    });
+
+    const sortedMonths = Object.keys(monthData).sort();
+    const labels = sortedMonths.map(key => monthData[key].label);
+    const counts = sortedMonths.map(key => monthData[key].count);
+
+    if (charts.monthly) {
+        charts.monthly.destroy();
+    }
+
+    charts.monthly = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Collections',
+                data: counts,
+                backgroundColor: 'hsl(142.1, 76.2%, 36.3%, 0.8)',
+                borderColor: 'hsl(142.1, 76.2%, 36.3%)',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'hsl(222.2, 47.4%, 11.2%)',
+                    padding: 12,
+                    borderRadius: 8,
+                    titleFont: {
+                        size: 14,
+                        weight: 600
+                    },
+                    bodyFont: {
+                        size: 13
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 10
+                    },
+                    grid: {
+                        color: 'hsl(214.3, 31.8%, 91.4%)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            }
+        }
+    });
 }
 
 // Initialization
@@ -718,6 +1059,10 @@ document.addEventListener('DOMContentLoaded', () => {
             filterAndSortData();
             setInterval(updateCountdowns, CONFIG.PAGINATION.UPDATE_INTERVAL);
             populateHistoricalSuburbs();
+
+            // Initialize data visualizations
+            updateStatistics();
+            initCharts();
         })
         .catch(error => log('Failed to initialize:', error));
 });
