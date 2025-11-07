@@ -3,13 +3,13 @@ const RUNTIME_CACHE = 'kerbside-runtime-v1';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
-    '/Kerbside-Collection-Schedule/',
-    '/Kerbside-Collection-Schedule/index.html',
-    '/Kerbside-Collection-Schedule/css/styles.css',
-    '/Kerbside-Collection-Schedule/js/script.js',
-    '/Kerbside-Collection-Schedule/dataset/kerbside-large-item-collection-schedule.json',
-    '/Kerbside-Collection-Schedule/dataset/Kerbside-cleanup-logan.json',
-    '/Kerbside-Collection-Schedule/manifest.json',
+    '/',
+    '/index.html',
+    '/css/styles.css',
+    '/js/script.js',
+    '/dataset/kerbside-large-item-collection-schedule.json',
+    '/dataset/Kerbside-cleanup-logan.json',
+    '/manifest.json',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
@@ -94,7 +94,7 @@ self.addEventListener('fetch', (event) => {
 
                         // Return offline page for HTML requests
                         if (event.request.headers.get('accept').includes('text/html')) {
-                            return caches.match('/Kerbside-Collection-Schedule/index.html');
+                            return caches.match('/index.html');
                         }
                     });
             })
@@ -112,13 +112,13 @@ self.addEventListener('sync', (event) => {
 async function syncCollections() {
     try {
         // Fetch latest data
-        const brisbaneResponse = await fetch('/Kerbside-Collection-Schedule/dataset/kerbside-large-item-collection-schedule.json');
-        const loganResponse = await fetch('/Kerbside-Collection-Schedule/dataset/Kerbside-cleanup-logan.json');
+        const brisbaneResponse = await fetch('/dataset/kerbside-large-item-collection-schedule.json');
+        const loganResponse = await fetch('/dataset/Kerbside-cleanup-logan.json');
 
         if (brisbaneResponse.ok && loganResponse.ok) {
             const cache = await caches.open(CACHE_NAME);
-            await cache.put('/Kerbside-Collection-Schedule/dataset/kerbside-large-item-collection-schedule.json', brisbaneResponse.clone());
-            await cache.put('/Kerbside-Collection-Schedule/dataset/Kerbside-cleanup-logan.json', loganResponse.clone());
+            await cache.put('/dataset/kerbside-large-item-collection-schedule.json', brisbaneResponse.clone());
+            await cache.put('/dataset/Kerbside-cleanup-logan.json', loganResponse.clone());
             console.log('[Service Worker] Collections synced');
         }
     } catch (error) {
