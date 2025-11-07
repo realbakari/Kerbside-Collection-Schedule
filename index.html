@@ -28,6 +28,7 @@
 
     <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="realbakari" data-description="Support me on Buy me a coffee!" data-message="" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
      <script async src="https://www.googletagmanager.com/gtag/js?id=G-18Z1XFLR4W"></script>
@@ -48,6 +49,86 @@
             <p>More information on the kerbside large item collection service can be found on the <a href="https://www.brisbane.qld.gov.au/" target="_blank" rel="noopener">Brisbane City Council website</a>.</p>
             <p>Additional information on waste can also be found on the Brisbane City Council website and on the <a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins" target="_blank" rel="noopener">rubbish, tips and bins page</a>.</p>
             <p class="license">This <a href="https://data.brisbane.qld.gov.au/explore/dataset/kerbside-large-item-collection-schedule/information/" target="_blank" rel="noopener">dataset</a> is licensed under: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
+        </section>
+
+        <!-- Data Visualizations Section -->
+        <section class="data-visualizations">
+            <h2><i class="fas fa-chart-bar" aria-hidden="true"></i> Data Insights</h2>
+
+            <!-- Statistics Dashboard -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: hsl(var(--info) / 0.1);">
+                        <i class="fas fa-map-marked-alt" style="color: hsl(var(--info));"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalSuburbs">0</div>
+                        <div class="stat-label">Total Suburbs</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: hsl(var(--success) / 0.1);">
+                        <i class="fas fa-check-circle" style="color: hsl(var(--success));"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="completedCollections">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: hsl(221.2 83.2% 53.3% / 0.1);">
+                        <i class="fas fa-clock" style="color: hsl(221.2 83.2% 53.3%);"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="upcomingCollections">0</div>
+                        <div class="stat-label">Upcoming</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: hsl(48 96% 89%);">
+                        <i class="fas fa-calendar-week" style="color: hsl(45 93% 47%);"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="thisWeekCollections">0</div>
+                        <div class="stat-label">This Week</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <!-- Weekly Distribution Chart -->
+                <div class="chart-container">
+                    <h3>Collections Per Week</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="weeklyDistributionChart" role="img" aria-label="Bar chart showing number of collections per week"></canvas>
+                    </div>
+                </div>
+
+                <!-- Council Comparison Chart -->
+                <div class="chart-container">
+                    <h3>Council Distribution</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="councilComparisonChart" role="img" aria-label="Donut chart showing distribution between Brisbane and Logan councils"></canvas>
+                    </div>
+                </div>
+
+                <!-- Progress Chart -->
+                <div class="chart-container">
+                    <h3>Collection Progress</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="progressChart" role="img" aria-label="Doughnut chart showing completion progress"></canvas>
+                    </div>
+                </div>
+
+                <!-- Monthly Distribution Chart -->
+                <div class="chart-container">
+                    <h3>Monthly Distribution</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="monthlyDistributionChart" role="img" aria-label="Bar chart showing collections by month"></canvas>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <div class="search-section">
