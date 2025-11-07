@@ -5,7 +5,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "portrait-primary",
   "categories": ["utilities", "lifestyle"],
@@ -13,30 +13,31 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚛</text></svg>",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230f172a'/><text x='50%' y='50%' font-size='120' text-anchor='middle' dominant-baseline='central'>🚛</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad1' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%230ea5e9;stop-opacity:1'/><stop offset='100%' style='stop-color:%230284c7;stop-opacity:1'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23grad1)'/><path d='M60 80h72v52H60z' fill='white' opacity='0.2'/><path d='M50 100h92v8H50z' fill='white'/><circle cx='70' cy='140' r='12' fill='%23334155'/><circle cx='122' cy='140' r='12' fill='%23334155'/><path d='M142 100h20l-10-20h-10z' fill='white' opacity='0.9'/><rect x='85' y='60' width='22' height='20' rx='4' fill='%2322c55e'/><path d='M96 65v10m-5-5h10' stroke='white' stroke-width='2' stroke-linecap='round'/></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230f172a'/><text x='50%' y='50%' font-size='320' text-anchor='middle' dominant-baseline='central'>🚛</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='grad2' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%230ea5e9;stop-opacity:1'/><stop offset='100%' style='stop-color:%230284c7;stop-opacity:1'/></linearGradient></defs><rect width='512' height='512' rx='115' fill='url(%23grad2)'/><g transform='translate(256,256)'><path d='M-96,-40h192v140H-96z' fill='white' opacity='0.2'/><path d='M-116,0h232v20H-116z' fill='white'/><circle cx='-60' cy='80' r='30' fill='%23334155'/><circle cx='60' cy='80' r='30' fill='%23334155'/><path d='M96 0h50l-25-50h-25z' fill='white' opacity='0.9'/><rect x='-28' y='-80' width='56' height='50' rx='10' fill='%2322c55e'/><path d='M0 -70v25m-12-12h24' stroke='white' stroke-width='6' stroke-linecap='round'/></g></svg>",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad3' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%230ea5e9;stop-opacity:1'/><stop offset='100%' style='stop-color:%230284c7;stop-opacity:1'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23grad3)'/><circle cx='96' cy='96' r='76' fill='url(%23grad3)'/><path d='M60 80h72v52H60z' fill='white' opacity='0.2'/><path d='M50 100h92v8H50z' fill='white'/><circle cx='70' cy='140' r='12' fill='%23334155'/><circle cx='122' cy='140' r='12' fill='%23334155'/><path d='M142 100h20l-10-20h-10z' fill='white' opacity='0.9'/><rect x='85' y='60' width='22' height='20' rx='4' fill='%2322c55e'/><path d='M96 65v10m-5-5h10' stroke='white' stroke-width='2' stroke-linecap='round'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect width='540' height='720' fill='%23f8fafc'/><text x='270' y='360' font-size='24' text-anchor='middle' fill='%230f172a'>Kerbside Collection Schedule</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect width='540' height='720' fill='%23f8fafc'/><rect width='540' height='60' fill='%230f172a'/><text x='270' y='40' font-size='20' text-anchor='middle' fill='white' font-weight='600'>Kerbside Schedule</text><rect x='20' y='80' width='500' height='100' rx='8' fill='white' stroke='%23e2e8f0' stroke-width='2'/><rect x='20' y='200' width='500' height='400' rx='8' fill='white' stroke='%23e2e8f0' stroke-width='2'/><text x='270' y='250' font-size='16' text-anchor='middle' fill='%2364748b'>Collection Schedule</text></svg>",
       "sizes": "540x720",
       "type": "image/svg+xml",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Home screen showing collection schedule"
     }
   ],
   "shortcuts": [
