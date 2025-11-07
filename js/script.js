@@ -157,6 +157,40 @@ function populateWeekFilter() {
     });
 }
 
+// Skeleton Loading
+function showSkeletonLoading() {
+    const dataContainer = document.getElementById('dataContainer');
+    if (!dataContainer) return;
+
+    const isMobile = window.innerWidth <= 768;
+    const skeletonCount = isMobile ? 3 : 6;
+
+    dataContainer.innerHTML = '';
+    dataContainer.classList.remove('hidden');
+    dataContainer.style.display = 'grid';
+
+    for (let i = 0; i < skeletonCount; i++) {
+        const skeletonCard = document.createElement('div');
+        skeletonCard.className = 'skeleton-card';
+        skeletonCard.innerHTML = `
+            <div class="skeleton skeleton-line title"></div>
+            <div class="skeleton skeleton-line text"></div>
+            <div class="skeleton skeleton-line small"></div>
+            <div class="skeleton skeleton-line text"></div>
+            <div class="skeleton skeleton-line small"></div>
+        `;
+        dataContainer.appendChild(skeletonCard);
+    }
+
+    // Hide loading spinner
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) loadingEl.style.display = 'none';
+}
+
+function hideSkeletonLoading() {
+    // Skeleton will be replaced by actual cards in renderCards
+}
+
 // Rendering Functions
 function renderCards(data) {
     log('renderCards called with', data.length, 'items');
@@ -1766,6 +1800,9 @@ document.addEventListener('DOMContentLoaded', () => {
         installAppBtn.addEventListener('click', installApp);
     }
 
+    // Show skeleton loading on initial load
+    showSkeletonLoading();
+
     fetchData()
         .then(() => {
             loadPreferences();
@@ -1801,6 +1838,206 @@ document.addEventListener('DOMContentLoaded', () => {
                     toggleButton.appendChild(icon);
                 }
             }
+
+            // Initialize bottom navigation
+            initBottomNavigation();
+
+            // Initialize pull to refresh
+            initPullToRefresh();
         })
         .catch(error => log('Failed to initialize:', error));
 });
+
+// ============================================
+// Pull to Refresh
+// ============================================
+
+function initPullToRefresh() {
+    // Only enable on mobile devices
+    if (window.innerWidth > 768) return;
+
+    const pullToRefreshEl = document.getElementById('pullToRefresh');
+    const pullToRefreshText = pullToRefreshEl.querySelector('.pull-to-refresh-text');
+
+    let startY = 0;
+    let currentY = 0;
+    let isPulling = false;
+    const pullThreshold = 80; // Pixels to pull before triggering refresh
+
+    // Touch start
+    document.addEventListener('touchstart', (e) => {
+        // Only activate if at top of page
+        if (window.scrollY === 0) {
+            startY = e.touches[0].pageY;
+            isPulling = true;
+        }
+    }, { passive: true });
+
+    // Touch move
+    document.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+
+        currentY = e.touches[0].pageY;
+        const pullDistance = currentY - startY;
+
+        // User is pulling down
+        if (pullDistance > 0 && window.scrollY === 0) {
+            e.preventDefault();
+
+            // Update indicator position
+            const pullAmount = Math.min(pullDistance, pullThreshold);
+            pullToRefreshEl.style.top = `${pullAmount - 80}px`;
+
+            // Update state based on pull distance
+            if (pullDistance < pullThreshold) {
+                pullToRefreshEl.classList.remove('release');
+                pullToRefreshEl.classList.add('pulling');
+                pullToRefreshText.textContent = 'Pull to refresh';
+            } else {
+                pullToRefreshEl.classList.remove('pulling');
+                pullToRefreshEl.classList.add('release');
+                pullToRefreshText.textContent = 'Release to refresh';
+            }
+        }
+    }, { passive: false });
+
+    // Touch end
+    document.addEventListener('touchend', () => {
+        if (!isPulling) return;
+
+        const pullDistance = currentY - startY;
+
+        // Trigger refresh if pulled past threshold
+        if (pullDistance >= pullThreshold) {
+            triggerRefresh(pullToRefreshEl, pullToRefreshText);
+        } else {
+            // Reset indicator
+            resetPullToRefresh(pullToRefreshEl);
+        }
+
+        isPulling = false;
+        startY = 0;
+        currentY = 0;
+    }, { passive: true });
+}
+
+function triggerRefresh(pullToRefreshEl, pullToRefreshText) {
+    // Show refreshing state
+    pullToRefreshEl.style.top = '0';
+    pullToRefreshEl.classList.remove('pulling', 'release');
+    pullToRefreshEl.classList.add('refreshing');
+    pullToRefreshText.textContent = 'Refreshing...';
+
+    // Refresh data
+    fetchData()
+        .then(() => {
+            filterAndSortData();
+            updateStatistics();
+            initCharts();
+
+            // Show success notification
+            showNotification('Schedule updated successfully!', 'success');
+
+            // Reset after short delay
+            setTimeout(() => {
+                resetPullToRefresh(pullToRefreshEl);
+            }, 500);
+        })
+        .catch((error) => {
+            log('Refresh failed:', error);
+            showNotification('Failed to refresh. Please try again.', 'error');
+            resetPullToRefresh(pullToRefreshEl);
+        });
+}
+
+function resetPullToRefresh(pullToRefreshEl) {
+    pullToRefreshEl.style.top = '-80px';
+    pullToRefreshEl.classList.remove('pulling', 'release', 'refreshing');
+
+    const pullToRefreshText = pullToRefreshEl.querySelector('.pull-to-refresh-text');
+    if (pullToRefreshText) {
+        pullToRefreshText.textContent = 'Pull to refresh';
+    }
+}
+
+// ============================================
+// Bottom Navigation (App-Style)
+// ============================================
+
+function initBottomNavigation() {
+    const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+    const sections = document.querySelectorAll('[data-nav-section]');
+
+    // Navigation click handler
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetSection = item.getAttribute('data-section');
+
+            // Update active nav item
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+
+            // Scroll to target section
+            const section = document.querySelector(`[data-nav-section="${targetSection}"]`);
+            if (section) {
+                const headerHeight = document.querySelector('header')?.offsetHeight || 0;
+                const navHeight = document.querySelector('.bottom-nav')?.offsetHeight || 0;
+                const yOffset = -(headerHeight + 20); // 20px extra padding
+                const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+                window.scrollTo({
+                    top: y,
+                    behavior: 'smooth'
+                });
+
+                // Save active section
+                safeLocalStorageSet('activeNavSection', targetSection);
+            }
+        });
+    });
+
+    // Highlight active section on scroll
+    let isScrolling;
+    window.addEventListener('scroll', () => {
+        // Clear timeout throughout the scroll
+        clearTimeout(isScrolling);
+
+        // Set a timeout to run after scrolling ends
+        isScrolling = setTimeout(() => {
+            updateActiveNavOnScroll(navItems, sections);
+        }, 100);
+    }, { passive: true });
+
+    // Restore active section from localStorage
+    const activeSection = safeLocalStorageGet('activeNavSection') || 'home';
+    const activeNavItem = document.querySelector(`.bottom-nav .nav-item[data-section="${activeSection}"]`);
+    if (activeNavItem) {
+        navItems.forEach(nav => nav.classList.remove('active'));
+        activeNavItem.classList.add('active');
+    }
+}
+
+function updateActiveNavOnScroll(navItems, sections) {
+    const headerHeight = document.querySelector('header')?.offsetHeight || 0;
+    const navHeight = document.querySelector('.bottom-nav')?.offsetHeight || 0;
+    const scrollPosition = window.scrollY + headerHeight + 100;
+
+    // Find which section is currently in view
+    let currentSection = 'home';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            currentSection = section.getAttribute('data-nav-section');
+        }
+    });
+
+    // Update active nav item based on current section
+    const activeNavItem = document.querySelector(`.bottom-nav .nav-item[data-section="${currentSection}"]`);
+    if (activeNavItem && !activeNavItem.classList.contains('active')) {
+        navItems.forEach(nav => nav.classList.remove('active'));
+        activeNavItem.classList.add('active');
+        safeLocalStorageSet('activeNavSection', currentSection);
+    }
+}

@@ -31,6 +31,12 @@
     <meta name="apple-mobile-web-app-title" content="Kerbside">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%230f172a'/><text x='50%' y='50%' font-size='110' text-anchor='middle' dominant-baseline='central'>🚛</text></svg>">
 
+    <!-- iOS Splash Screens -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1290 2796'><rect width='1290' height='2796' fill='%230f172a'/><g transform='translate(645,1398)'><rect x='-100' y='-100' width='200' height='200' rx='45' fill='url(%23grad)'/><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%230ea5e9'/><stop offset='100%' style='stop-color:%230284c7'/></linearGradient></defs><path d='M-40 0h80v35H-40z' fill='white' opacity='0.2'/><circle cx='-20' cy='50' r='8' fill='white'/><circle cx='20' cy='50' r='8' fill='white'/></g></svg>">
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1179 2556'><rect width='1179' height='2556' fill='%230f172a'/><g transform='translate(590,1278)'><rect x='-100' y='-100' width='200' height='200' rx='45' fill='url(%23grad)'/><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%230ea5e9'/><stop offset='100%' style='stop-color:%230284c7'/></linearGradient></defs><path d='M-40 0h80v35H-40z' fill='white' opacity='0.2'/><circle cx='-20' cy='50' r='8' fill='white'/><circle cx='20' cy='50' r='8' fill='white'/></g></svg>">
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1284 2778'><rect width='1284' height='2778' fill='%230f172a'/><g transform='translate(642,1389)'><rect x='-100' y='-100' width='200' height='200' rx='45' fill='url(%23grad)'/><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%230ea5e9'/><stop offset='100%' style='stop-color:%230284c7'/></linearGradient></defs><path d='M-40 0h80v35H-40z' fill='white' opacity='0.2'/><circle cx='-20' cy='50' r='8' fill='white'/><circle cx='20' cy='50' r='8' fill='white'/></g></svg>">
+
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
@@ -43,6 +49,14 @@
      <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-18Z1XFLR4W'); </script>
 </head>
 <body>
+    <!-- Pull to Refresh Indicator -->
+    <div id="pullToRefresh" class="pull-to-refresh" aria-live="polite">
+        <div class="pull-to-refresh-icon">
+            <i class="fas fa-arrow-down"></i>
+        </div>
+        <span class="pull-to-refresh-text">Pull to refresh</span>
+    </div>
+
     <div id="notification" class="notification" role="alert" aria-live="polite">
         <span><i class="fas fa-info-circle"></i> Updated: Logan City Council 2025-2026 kerbside cleanup schedule now available!</span>
         <button id="closeNotification" aria-label="Close notification">&times;</button>
@@ -59,7 +73,7 @@
         </div>
     </header>
     <main>
-        <section class="info-section">
+        <section class="info-section" data-nav-section="home">
             <p>Brisbane City Council's kerbside large item collection is an annual service across all Brisbane suburbs to help residents dispose of large household items. The kerbside large item collection schedule provides data on when each suburb's collection is scheduled.</p>
             <p>More information on the kerbside large item collection service can be found on the <a href="https://www.brisbane.qld.gov.au/" target="_blank" rel="noopener">Brisbane City Council website</a>.</p>
             <p>Additional information on waste can also be found on the Brisbane City Council website and on the <a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins" target="_blank" rel="noopener">rubbish, tips and bins page</a>.</p>
@@ -67,7 +81,7 @@
         </section>
 
         <!-- Data Visualizations Section -->
-        <section class="data-visualizations">
+        <section class="data-visualizations" data-nav-section="insights">
             <h2><i class="fas fa-chart-bar" aria-hidden="true"></i> Data Insights</h2>
             <p class="insights-description">
                 <i class="fas fa-info-circle" style="color: hsl(var(--info));"></i>
@@ -175,7 +189,7 @@
         </div>
 
         <!-- Multi-Suburb Tracking Section -->
-        <section class="tracked-suburbs-section">
+        <section class="tracked-suburbs-section" data-nav-section="tracked">
             <h3><i class="fas fa-map-marked"></i> Track Multiple Suburbs</h3>
             <p class="section-description">Track collection dates for multiple properties (home, work, rental)</p>
             <div class="track-suburb-controls">
@@ -213,21 +227,22 @@
             </div>
         </section>
 
-        <div class="search-section">
-            <label for="searchInput" class="sr-only">Search by suburb</label>
-            <input
-                type="text"
-                id="searchInput"
-                list="suburbList"
-                placeholder="Search by suburb"
-                aria-label="Search by suburb"
-                autocomplete="off"
-            >
-            <datalist id="suburbList"></datalist>
-            <button id="clearButton" aria-label="Clear search">Clear</button>
-        </div>
+        <div class="schedule-section" data-nav-section="schedule">
+            <div class="search-section">
+                <label for="searchInput" class="sr-only">Search by suburb</label>
+                <input
+                    type="text"
+                    id="searchInput"
+                    list="suburbList"
+                    placeholder="Search by suburb"
+                    aria-label="Search by suburb"
+                    autocomplete="off"
+                >
+                <datalist id="suburbList"></datalist>
+                <button id="clearButton" aria-label="Clear search">Clear</button>
+            </div>
 
-        <div class="filter-section">
+            <div class="filter-section">
             <label for="weekFilter" class="sr-only">Filter by week</label>
             <select id="weekFilter" aria-label="Filter by week">
                 <option value="">All Weeks</option>
@@ -276,13 +291,14 @@
             <p><strong>Note:</strong> Dates may change due to operational needs or weather. Check this page for updates.</p>
         </section>
 
-        <div id="loading" class="loading" role="status" aria-live="polite">
-            <div class="spinner" aria-hidden="true"></div>
-            Loading collection schedules...
-        </div>
-        <div id="error" class="error hidden" role="alert" aria-live="assertive"></div>
-        <div id="dataContainer" class="data-container hidden" role="region" aria-label="Collection schedules"></div>
-        <nav id="pagination" class="pagination hidden" aria-label="Pagination navigation"></nav>
+            <div id="loading" class="loading" role="status" aria-live="polite">
+                <div class="spinner" aria-hidden="true"></div>
+                Loading collection schedules...
+            </div>
+            <div id="error" class="error hidden" role="alert" aria-live="assertive"></div>
+            <div id="dataContainer" class="data-container hidden" role="region" aria-label="Collection schedules"></div>
+            <nav id="pagination" class="pagination hidden" aria-label="Pagination navigation"></nav>
+        </div><!-- End schedule-section -->
 
         <section id="itemGuide" class="item-guide">
             <h2>Acceptable Items for Kerbside Collection</h2>
@@ -354,6 +370,26 @@
     <footer>
         <p>&copy; 2024 Bakari Mustafa. All rights reserved.</p>
     </footer>
+
+    <!-- Bottom Navigation (Mobile App-Style) -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item active" data-section="home" aria-label="Home">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" data-section="schedule" aria-label="Schedule">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Schedule</span>
+        </button>
+        <button class="nav-item" data-section="tracked" aria-label="Tracked">
+            <i class="fas fa-map-marked"></i>
+            <span>Tracked</span>
+        </button>
+        <button class="nav-item" data-section="insights" aria-label="Insights">
+            <i class="fas fa-chart-bar"></i>
+            <span>Insights</span>
+        </button>
+    </nav>
 
     <!-- Screen reader only class -->
     <!-- Share Modal -->

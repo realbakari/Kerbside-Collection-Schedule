@@ -70,6 +70,55 @@ header h1 {
     letter-spacing: -0.025em;
 }
 
+/* Mobile App-Style Header */
+@media (max-width: 768px) {
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        padding: 1rem 1rem;
+        background: hsl(var(--card));
+        border-bottom: 1px solid hsl(var(--border));
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: hsl(var(--foreground));
+        margin: 0;
+    }
+
+    header p {
+        font-size: 0.75rem;
+        margin: 0.25rem 0 0 0;
+        color: hsl(var(--muted-foreground));
+    }
+
+    .header-content {
+        max-width: 100%;
+    }
+
+    .install-button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .install-button i {
+        font-size: 0.875rem;
+    }
+
+    /* iOS safe area support for header */
+    @supports (padding-top: env(safe-area-inset-top)) {
+        header {
+            padding-top: calc(1rem + env(safe-area-inset-top));
+        }
+    }
+}
+
 footer {
     background-color: hsl(var(--muted));
     color: hsl(var(--muted-foreground));
@@ -1690,5 +1739,314 @@ body.offline::before {
 @media (min-width: 1025px) {
     .data-container {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ============================================
+   Skeleton Loading States
+   ============================================ */
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        hsl(var(--muted)) 0%,
+        hsl(var(--muted) / 0.6) 50%,
+        hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: var(--radius);
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-card {
+    padding: 1rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    background: hsl(var(--card));
+}
+
+.skeleton-line {
+    height: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.skeleton-line.title {
+    height: 1.5rem;
+    width: 60%;
+}
+
+.skeleton-line.text {
+    height: 1rem;
+    width: 80%;
+}
+
+.skeleton-line.small {
+    height: 0.75rem;
+    width: 40%;
+}
+
+.skeleton-stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    background: hsl(var(--card));
+}
+
+.skeleton-stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+}
+
+.skeleton-stat-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Loading container with skeletons */
+.loading-skeletons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+    .loading-skeletons {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   Pull to Refresh
+   ============================================ */
+
+.pull-to-refresh {
+    position: fixed;
+    top: -80px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: hsl(var(--card));
+    border-bottom: 1px solid hsl(var(--border));
+    z-index: 1000;
+    transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pull-to-refresh.visible {
+    top: 0;
+}
+
+.pull-to-refresh.refreshing {
+    top: 0;
+}
+
+.pull-to-refresh-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(var(--primary));
+    font-size: 1.25rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pull-to-refresh.pulling .pull-to-refresh-icon {
+    transform: rotate(0deg);
+}
+
+.pull-to-refresh.release .pull-to-refresh-icon {
+    transform: rotate(180deg);
+}
+
+.pull-to-refresh.refreshing .pull-to-refresh-icon {
+    animation: spin 1s linear infinite;
+}
+
+.pull-to-refresh.refreshing .pull-to-refresh-icon i::before {
+    content: '\f021'; /* fa-sync-alt */
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.pull-to-refresh-text {
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+    font-weight: 500;
+}
+
+/* ============================================
+   Bottom Navigation (App-Style)
+   ============================================ */
+
+.bottom-nav {
+    display: none; /* Hidden by default, shown only on mobile */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: hsl(var(--card));
+    border-top: 1px solid hsl(var(--border));
+    padding: 0.5rem 0;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.bottom-nav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        hsl(var(--primary) / 0.3),
+        transparent
+    );
+}
+
+.bottom-nav {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.25rem;
+    background: transparent;
+    border: none;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    min-height: 56px;
+}
+
+.nav-item i {
+    font-size: 1.25rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item span {
+    font-size: 0.65rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Active state */
+.nav-item.active {
+    color: hsl(var(--primary));
+}
+
+.nav-item.active i {
+    transform: scale(1.1);
+}
+
+.nav-item.active span {
+    font-weight: 600;
+}
+
+/* Active indicator */
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 3px;
+    background: hsl(var(--primary));
+    border-radius: 0 0 3px 3px;
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+    to {
+        height: 3px;
+        opacity: 1;
+    }
+}
+
+/* Hover effect (for desktop testing) */
+.nav-item:hover:not(.active) {
+    color: hsl(var(--foreground));
+    background: hsl(var(--accent));
+}
+
+/* Active tap effect */
+.nav-item:active {
+    transform: scale(0.95);
+}
+
+/* Mobile only - Show bottom nav and add padding to body */
+@media (max-width: 768px) {
+    .bottom-nav {
+        display: grid;
+    }
+
+    /* Add padding to main content to prevent bottom nav overlap */
+    body {
+        padding-bottom: 70px;
+    }
+
+    /* Ensure footer is not covered */
+    footer {
+        padding-bottom: 0;
+        margin-bottom: 70px;
+    }
+
+    /* Support for iOS safe area (notch) */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .bottom-nav {
+            padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+        }
+
+        body {
+            padding-bottom: calc(70px + env(safe-area-inset-bottom));
+        }
+
+        footer {
+            margin-bottom: calc(70px + env(safe-area-inset-bottom));
+        }
     }
 }
