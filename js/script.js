@@ -41,16 +41,15 @@ const brisbaneCitySuburbs = [
 ];
 
 const loganCitySuburbs = [
-    "Woodridge", "Logan Central", "Kingston", "Loganlea", "Berrinba", "Marsden",
-    "Slacks Creek", "Meadowbrook", "Heritage Park", "Crestmead", "Browns Plains",
-    "Regents Park", "Hillcrest", "Boronia Heights", "Forestdale", "Greenbank",
-    "New Beith", "Veresdale Scrub", "Veresdale", "Cedar Vale", "Mundoolun",
-    "Cedar Grove", "Woodhill", "North Maclean", "South Maclean", "Jimboomba",
-    "Riverbend", "Glenlogan", "Flagstone", "Munruben", "Park Ridge", "Park Ridge South",
-    "Stockleigh", "Chambers Flat", "Buccan", "Logan Village", "Yarrabilba", "Tamborine",
-    "Cedar Creek", "Kairabah", "Logan Reserve", "Waterford", "Waterford West",
-    "Rochedale South", "Priestdale", "Springwood", "Underwood", "Daisy Hill",
-    "Shailer Park", "Carbrook", "Cornubia", "Loganholme", "Tanah Merah"
+    "Heritage Park", "Crestmead", "Browns Plains", "Regents Park",
+    "Greenbank", "New Beith", "Hillcrest", "Boronia Heights", "Forestdale",
+    "Veresdale Scrub", "Veresdale", "Cedar Vale", "Mundoolun", "Cedar Grove",
+    "Woodhill", "North Maclean", "South Maclean", "Jimboomba", "Riverbend",
+    "Glenlogan", "Flagstone", "Munruben", "Park Ridge", "Park Ridge South",
+    "Stockleigh", "Chambers Flat", "Buccan", "Logan Village", "Yarrabilba",
+    "Tamborine", "Cedar Creek", "Kairabah", "Logan Reserve", "Waterford",
+    "Waterford West", "Rochedale South", "Priestdale", "Springwood", "Underwood",
+    "Daisy Hill", "Shailer Park", "Carbrook", "Cornubia", "Loganholme", "Tanah Merah"
 ];
 
 const allSuburbs = [...new Set([...brisbaneCitySuburbs, ...loganCitySuburbs])];
@@ -636,18 +635,18 @@ function initNotification() {
     if (closeNotification) {
         closeNotification.addEventListener('click', () => {
             notification.style.display = 'none';
-            safeLocalStorageSet('loganNotificationClosed', 'true');
+            safeLocalStorageSet('loganNotification2025Closed', 'true');
         });
     }
 
-    if (safeLocalStorageGet('loganNotificationClosed') !== 'true') {
+    if (safeLocalStorageGet('loganNotification2025Closed') !== 'true') {
         notification.style.display = 'flex';
 
         // Auto-dismiss after 10 seconds
         setTimeout(() => {
             if (notification.style.display !== 'none') {
                 notification.style.display = 'none';
-                safeLocalStorageSet('loganNotificationClosed', 'true');
+                safeLocalStorageSet('loganNotification2025Closed', 'true');
             }
         }, 10000);
     } else {
