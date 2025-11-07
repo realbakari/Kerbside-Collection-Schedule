@@ -159,6 +159,24 @@
             </button>
         </div>
 
+        <!-- Multi-Suburb Tracking Section -->
+        <section class="tracked-suburbs-section">
+            <h3><i class="fas fa-map-marked"></i> Track Multiple Suburbs</h3>
+            <p class="section-description">Track collection dates for multiple properties (home, work, rental)</p>
+            <div class="track-suburb-controls">
+                <label for="trackSuburbSelect" class="sr-only">Select suburb to track</label>
+                <select id="trackSuburbSelect" aria-label="Select suburb to track">
+                    <option value="">Select a suburb to track</option>
+                </select>
+                <button id="addTrackedSuburb" class="btn-primary">
+                    <i class="fas fa-plus"></i> Add Suburb
+                </button>
+            </div>
+            <div id="trackedSuburbsList" class="tracked-suburbs-list">
+                <p class="no-tracked-suburbs">No suburbs tracked yet. Add your first suburb above!</p>
+            </div>
+        </section>
+
         <!-- Reminder Setup Section -->
         <section class="reminder-setup">
             <h3><i class="fas fa-bell"></i> Collection Reminders</h3>
@@ -227,6 +245,12 @@
             </button>
             <button id="exportPDF" aria-label="Export data to PDF">
                 <i class="fas fa-file-pdf" style="margin-right: 0.5rem;"></i>Export to PDF
+            </button>
+            <button id="exportCalendar" aria-label="Export to calendar" class="btn-calendar">
+                <i class="fas fa-calendar-plus" style="margin-right: 0.5rem;"></i>Add to Calendar
+            </button>
+            <button id="printSchedule" aria-label="Print schedule">
+                <i class="fas fa-print" style="margin-right: 0.5rem;"></i>Print
             </button>
         </div>
 
@@ -317,6 +341,26 @@
     </footer>
 
     <!-- Screen reader only class -->
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal" style="display: none;" role="dialog" aria-labelledby="shareModalTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="shareModalTitle"><i class="fas fa-share-alt"></i> Share Schedule</h3>
+                <button id="closeShareModal" class="modal-close" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Share the collection schedule for <strong id="shareSuburbName"></strong></p>
+                <div class="share-url-container">
+                    <input type="text" id="shareUrl" readonly aria-label="Shareable URL">
+                    <button id="copyShareUrl" class="btn-copy">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+                <p class="share-hint">Link copied! Share it with friends, family, or neighbors.</p>
+            </div>
+        </div>
+    </div>
+
     <style>
         .sr-only {
             position: absolute;
