@@ -2,8 +2,8 @@
   "name": "Kerbside Collection Schedule",
   "short_name": "Kerbside",
   "description": "Brisbane and Logan City Council kerbside cleanup collection schedule tracker",
-  "start_url": "/Kerbside-Collection-Schedule/",
-  "scope": "/Kerbside-Collection-Schedule/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0f172a",
@@ -44,7 +44,7 @@
       "name": "View Schedule",
       "short_name": "Schedule",
       "description": "View collection schedule",
-      "url": "/Kerbside-Collection-Schedule/",
+      "url": "/",
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text y='.9em' font-size='90'>📅</text></svg>",
@@ -57,7 +57,7 @@
       "name": "Track Suburbs",
       "short_name": "Track",
       "description": "Manage tracked suburbs",
-      "url": "/Kerbside-Collection-Schedule/#tracked",
+      "url": "/#tracked",
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text y='.9em' font-size='90'>📍</text></svg>",

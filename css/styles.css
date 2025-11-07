@@ -1496,8 +1496,24 @@ body.offline::before {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    /* Header - Center when install button is hidden */
+    .header-content {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .header-content:has(.install-button[style*="display: inline-flex"]) {
+        justify-content: space-between;
+        text-align: left;
+    }
+
     header h1 {
         font-size: 1.5rem;
+    }
+
+    .install-button {
+        font-size: 0.8rem;
+        padding: 0.6rem 1rem;
     }
 
     .search-section {
@@ -1531,24 +1547,137 @@ body.offline::before {
         font-size: 0.8125rem;
     }
 
+    /* Analytics - Make less overwhelming on mobile */
     .data-visualizations {
         padding: 1rem;
+        margin-bottom: 1rem;
     }
 
     .data-visualizations h2 {
         font-size: 1.25rem;
     }
 
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .insights-description {
+        font-size: 0.8rem;
+        padding: 0.6rem 0.8rem;
     }
 
-    .charts-grid {
+    /* Stats grid - Single column on mobile for better fit */
+    .stats-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.25rem;
     }
 
     .stat-value {
         font-size: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+    }
+
+    .stat-description {
+        font-size: 0.7rem;
+    }
+
+    /* Charts - Collapse by default on mobile */
+    .charts-grid {
+        grid-template-columns: 1fr;
+        max-height: 0;
+        opacity: 0;
+        gap: 0;
+        margin: 0;
+    }
+
+    .charts-grid:not(.collapsed) {
+        max-height: 5000px;
+        opacity: 1;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .chart-container {
+        padding: 1rem;
+    }
+
+    .chart-container h3 {
+        font-size: 0.9rem;
+    }
+
+    .chart-wrapper {
+        height: 200px;
+    }
+
+    .chart-wrapper canvas {
+        max-height: 200px;
+    }
+
+    /* Tracked Suburbs - Better mobile layout */
+    .tracked-suburbs-section {
+        padding: 1rem;
+    }
+
+    .tracked-suburbs-list {
+        grid-template-columns: 1fr;
+    }
+
+    .tracked-suburb-actions {
+        flex-direction: column;
+    }
+
+    .tracked-suburb-actions button {
+        width: 100%;
+        min-width: auto;
+    }
+
+    /* Reminder Setup - Mobile friendly */
+    .reminder-setup {
+        padding: 1rem;
+    }
+
+    .reminder-controls {
+        flex-direction: column;
+    }
+
+    .reminder-controls select,
+    .reminder-controls button {
+        width: 100%;
+        min-width: auto;
+    }
+
+    /* Share Modal - Full width on mobile */
+    .modal {
+        padding: 0.5rem;
+    }
+
+    .modal-content {
+        max-width: 100%;
+    }
+
+    /* PWA Notification - Smaller on mobile */
+    .pwa-notification {
+        max-width: calc(100% - 2rem);
+        font-size: 0.8rem;
+    }
+
+    /* Offline indicator - Smaller on mobile */
+    body.offline::before {
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        transform: none;
     }
 }
 

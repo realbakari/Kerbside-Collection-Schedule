@@ -1070,7 +1070,7 @@ function initPWA() {
     // Register service worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/Kerbside-Collection-Schedule/service-worker.js')
+            navigator.serviceWorker.register('/service-worker.js')
                 .then((registration) => {
                     log('[PWA] Service Worker registered:', registration.scope);
 
@@ -1785,9 +1785,12 @@ document.addEventListener('DOMContentLoaded', () => {
             populateTrackSuburbSelect();
             initTrackedSuburbsSystem();
 
-            // Restore chart collapsed state
+            // Restore chart collapsed state or collapse by default on mobile
             const chartsCollapsed = safeLocalStorageGet('chartsCollapsed');
-            if (chartsCollapsed === 'true') {
+            const isMobile = window.innerWidth <= 768;
+            const shouldCollapse = chartsCollapsed === 'true' || (chartsCollapsed === null && isMobile);
+
+            if (shouldCollapse) {
                 const chartsSection = document.querySelector('.charts-grid');
                 const toggleButton = document.getElementById('toggleCharts');
                 if (chartsSection && toggleButton) {
