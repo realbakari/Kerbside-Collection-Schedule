@@ -21,6 +21,7 @@ let currentPage = 1;
 let activeStatFilter = null; // Track which stat card filter is active
 let trackedSuburbs = []; // Array of tracked suburbs
 let activeTrackedSuburb = null; // Currently selected tracked suburb
+let deferredPrompt = null; // PWA install prompt
 
 const brisbaneCitySuburbs = [
     "Acacia Ridge", "Albion", "Alderley", "Algester", "Annerley", "Anstead", "Archerfield", "Ascot", "Ashgrove", "Aspley",
@@ -1064,6 +1065,133 @@ function checkURLParameters() {
     }
 }
 
+// PWA Install Prompt & Service Worker
+function initPWA() {
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/Kerbside-Collection-Schedule/service-worker.js')
+                .then((registration) => {
+                    log('[PWA] Service Worker registered:', registration.scope);
+
+                    // Check for updates periodically
+                    setInterval(() => {
+                        registration.update();
+                    }, 60 * 60 * 1000); // Check every hour
+                })
+                .catch((error) => {
+                    log('[PWA] Service Worker registration failed:', error);
+                });
+        });
+
+        // Handle service worker updates
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            log('[PWA] New service worker activated');
+            // Optionally show update notification to user
+        });
+    }
+
+    // Handle install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+        log('[PWA] Install prompt available');
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallButton();
+    });
+
+    // Track installation
+    window.addEventListener('appinstalled', () => {
+        log('[PWA] App installed');
+        hideInstallButton();
+        deferredPrompt = null;
+
+        // Show success message
+        showNotification('App installed successfully! You can now use it offline.', 'success');
+    });
+
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        log('[PWA] Running as installed app');
+        hideInstallButton();
+    }
+}
+
+function showInstallButton() {
+    const installButton = document.getElementById('installApp');
+    if (installButton) {
+        installButton.style.display = 'inline-flex';
+    }
+}
+
+function hideInstallButton() {
+    const installButton = document.getElementById('installApp');
+    if (installButton) {
+        installButton.style.display = 'none';
+    }
+}
+
+async function installApp() {
+    if (!deferredPrompt) {
+        log('[PWA] Install prompt not available');
+        return;
+    }
+
+    // Show the install prompt
+    deferredPrompt.prompt();
+
+    // Wait for the user's response
+    const { outcome } = await deferredPrompt.userChoice;
+    log('[PWA] User response:', outcome);
+
+    if (outcome === 'accepted') {
+        log('[PWA] User accepted install');
+    } else {
+        log('[PWA] User dismissed install');
+    }
+
+    // Clear the prompt
+    deferredPrompt = null;
+}
+
+function showNotification(message, type = 'info') {
+    const notificationDiv = document.createElement('div');
+    notificationDiv.className = `pwa-notification pwa-notification-${type}`;
+    notificationDiv.innerHTML = `
+        <div class="pwa-notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" aria-label="Close notification">
+            &times;
+        </button>
+    `;
+
+    document.body.appendChild(notificationDiv);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notificationDiv.remove();
+    }, 5000);
+}
+
+// Check online/offline status
+function initOnlineStatus() {
+    const updateOnlineStatus = () => {
+        if (navigator.onLine) {
+            log('[PWA] Online');
+            document.body.classList.remove('offline');
+        } else {
+            log('[PWA] Offline');
+            document.body.classList.add('offline');
+            showNotification('You are offline. Using cached data.', 'info');
+        }
+    };
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+}
+
 // Collection Reminder System
 function initReminderSystem() {
     const savedSuburb = safeLocalStorageGet('reminderSuburb');
@@ -1627,6 +1755,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check URL parameters for shared suburb link
     checkURLParameters();
+
+    // Initialize PWA features
+    initPWA();
+    initOnlineStatus();
+
+    // Initialize install app button
+    const installAppBtn = document.getElementById('installApp');
+    if (installAppBtn) {
+        installAppBtn.addEventListener('click', installApp);
+    }
 
     fetchData()
         .then(() => {
