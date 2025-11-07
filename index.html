@@ -3,134 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Brisbane City Council's kerbside large item collection schedule for disposing of large household items across Brisbane suburbs.">
-    <meta name="keywords" content="collection, environment, kerbside, recovery, recycling, resource, waste, Brisbane, city council, large item disposal">
-    <title>Kerbside Collection Schedule</title>
+    <meta name="description" content="Brisbane City Council and Logan City Council's kerbside large item collection schedule for disposing of large household items across Brisbane and Logan suburbs.">
+    <meta name="keywords" content="collection, environment, kerbside, recovery, recycling, resource, waste, Brisbane, Logan, city council, large item disposal">
+    <meta name="author" content="Bakari Mustafa">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://realbakari.github.io/Kerbside-Collection-Schedule/">
+    <meta property="og:title" content="Kerbside Collection Schedule - Brisbane & Logan">
+    <meta property="og:description" content="Find your kerbside large item collection dates for Brisbane and Logan City Council suburbs">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Kerbside Collection Schedule - Brisbane & Logan">
+    <meta name="twitter:description" content="Find your kerbside large item collection dates for Brisbane and Logan City Council suburbs">
+
+    <title>Kerbside Collection Schedule - Brisbane & Logan</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚛</text></svg>">
+
     <link rel="stylesheet" href="css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
     <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="realbakari" data-description="Support me on Buy me a coffee!" data-message="" data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!-- Global site tag (gtag.js) - Google Analytics --> 
-     <script async src="https://www.googletagmanager.com/gtag/js?id=G-18Z1XFLR4W"></script> 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+     <script async src="https://www.googletagmanager.com/gtag/js?id=G-18Z1XFLR4W"></script>
      <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-18Z1XFLR4W'); </script>
 </head>
 <body>
-    <div id="notification" class="notification">
+    <div id="notification" class="notification" role="alert" aria-live="polite">
         <span><i class="fas fa-info-circle"></i> New: You can now view Kerbside cleanup schedules for Logan City Council!</span>
         <button id="closeNotification" aria-label="Close notification">&times;</button>
     </div>
     <header>
         <h1>Kerbside Collection Schedule</h1>
+        <p style="margin-top: 0.5rem; font-size: 0.95rem; opacity: 0.9;">Brisbane & Logan City Councils</p>
     </header>
     <main>
         <section class="info-section">
             <p>Brisbane City Council's kerbside large item collection is an annual service across all Brisbane suburbs to help residents dispose of large household items. The kerbside large item collection schedule provides data on when each suburb's collection is scheduled.</p>
-            <p>More information on the kerbside large item collection service can be found on the <a href="https://www.brisbane.qld.gov.au/" target="_blank">Brisbane City Council website</a>.</p>
-            <p>Additional information on waste can also be found on the Brisbane City Council website and on the <a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins" target="_blank">rubbish, tips and bins page</a>.</p>
-            <p class="license">This <a href="https://data.brisbane.qld.gov.au/explore/dataset/kerbside-large-item-collection-schedule/information/">dataset</a> is licensed under: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a></p>
+            <p>More information on the kerbside large item collection service can be found on the <a href="https://www.brisbane.qld.gov.au/" target="_blank" rel="noopener">Brisbane City Council website</a>.</p>
+            <p>Additional information on waste can also be found on the Brisbane City Council website and on the <a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins" target="_blank" rel="noopener">rubbish, tips and bins page</a>.</p>
+            <p class="license">This <a href="https://data.brisbane.qld.gov.au/explore/dataset/kerbside-large-item-collection-schedule/information/" target="_blank" rel="noopener">dataset</a> is licensed under: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
         </section>
+
         <div class="search-section">
-            <input type="text" id="searchInput" list="suburbList" placeholder="Search by suburb">
+            <label for="searchInput" class="sr-only">Search by suburb</label>
+            <input
+                type="text"
+                id="searchInput"
+                list="suburbList"
+                placeholder="Search by suburb"
+                aria-label="Search by suburb"
+                autocomplete="off"
+            >
             <datalist id="suburbList"></datalist>
-            <button id="clearButton">Clear</button>
+            <button id="clearButton" aria-label="Clear search">Clear</button>
         </div>
+
         <div class="filter-section">
-            <select id="weekFilter">
+            <label for="weekFilter" class="sr-only">Filter by week</label>
+            <select id="weekFilter" aria-label="Filter by week">
                 <option value="">All Weeks</option>
             </select>
-            <input type="date" id="dateFilter">
-            <select id="completionFilter">
+
+            <label for="dateFilter" class="sr-only">Filter by date</label>
+            <input type="date" id="dateFilter" aria-label="Filter by collection date">
+
+            <label for="completionFilter" class="sr-only">Filter by status</label>
+            <select id="completionFilter" aria-label="Filter by completion status">
                 <option value="">All Status</option>
                 <option value="completed">Completed</option>
                 <option value="not-completed">Not Completed</option>
             </select>
-            <select id="sortOption">
+
+            <label for="sortOption" class="sr-only">Sort collections</label>
+            <select id="sortOption" aria-label="Sort collections">
                 <option value="suburb">Sort by Suburb</option>
                 <option value="date">Sort by Collection Date</option>
                 <option value="week">Sort by Week</option>
             </select>
-            <button id="applyFilters">Apply Filters</button>
-            <button id="clearFilters">Clear Filters</button>
+
+            <button id="applyFilters" aria-label="Apply filters">Apply Filters</button>
+            <button id="clearFilters" aria-label="Clear all filters">Clear Filters</button>
         </div>
+
         <div class="export-section">
-            <button id="exportCSV">Export to CSV</button>
-            <button id="exportPDF">Export to PDF</button>
+            <button id="exportCSV" aria-label="Export data to CSV">
+                <i class="fas fa-file-csv" style="margin-right: 0.5rem;"></i>Export to CSV
+            </button>
+            <button id="exportPDF" aria-label="Export data to PDF">
+                <i class="fas fa-file-pdf" style="margin-right: 0.5rem;"></i>Export to PDF
+            </button>
         </div>
-        <section class="notice">
-            <p><i class="fas fa-info-circle info-icon"></i> <strong>Note:</strong> Dates may change due to operational needs or weather. Check this page for updates.</p>
+
+        <section class="notice" role="note">
+            <div>
+                <i class="fas fa-info-circle info-icon"></i>
+            </div>
+            <p><strong>Note:</strong> Dates may change due to operational needs or weather. Check this page for updates.</p>
         </section>
-        <div id="loading" class="loading">Loading...</div>
-        <div id="error" class="error hidden"></div>
-        <div id="dataContainer" class="data-container hidden"></div>
-        <div id="pagination" class="pagination hidden"></div><br>
+
+        <div id="loading" class="loading" role="status" aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
+            Loading collection schedules...
+        </div>
+        <div id="error" class="error hidden" role="alert" aria-live="assertive"></div>
+        <div id="dataContainer" class="data-container hidden" role="region" aria-label="Collection schedules"></div>
+        <nav id="pagination" class="pagination hidden" aria-label="Pagination navigation"></nav>
+
         <section id="itemGuide" class="item-guide">
             <h2>Acceptable Items for Kerbside Collection</h2>
-            <ul class="acceptable-items">
-                <li><i class="fas fa-couch"></i> Furniture (e.g., chairs, tables, sofas)</li>
-                <li><i class="fas fa-washing-machine"></i> White goods (e.g., fridges, stoves)</li>
-                <li><i class="fas fa-blender"></i> Small household appliances (e.g., fans, toasters)</li>
-                <li><i class="fas fa-scroll"></i> Carpets and rugs (rolled and tied)</li>
-                <li><i class="fas fa-tv"></i> Electronic waste (e.g., televisions, computers)</li>
-                <li><i class="fas fa-bed"></i> Mattresses</li>
-                <li><i class="fas fa-bicycle"></i> Bicycles and sporting equipment</li>
-                <li><i class="fas fa-bath"></i> Bath and laundry tubs</li>
-                <li><i class="fas fa-tree"></i> Wood products less than 1.5 metres</li>
+            <ul class="acceptable-items" role="list">
+                <li><i class="fas fa-couch" aria-hidden="true"></i> Furniture (e.g., chairs, tables, sofas)</li>
+                <li><i class="fas fa-washing-machine" aria-hidden="true"></i> White goods (e.g., fridges, stoves)</li>
+                <li><i class="fas fa-blender" aria-hidden="true"></i> Small household appliances (e.g., fans, toasters)</li>
+                <li><i class="fas fa-scroll" aria-hidden="true"></i> Carpets and rugs (rolled and tied)</li>
+                <li><i class="fas fa-tv" aria-hidden="true"></i> Electronic waste (e.g., televisions, computers)</li>
+                <li><i class="fas fa-bed" aria-hidden="true"></i> Mattresses</li>
+                <li><i class="fas fa-bicycle" aria-hidden="true"></i> Bicycles and sporting equipment</li>
+                <li><i class="fas fa-bath" aria-hidden="true"></i> Bath and laundry tubs</li>
+                <li><i class="fas fa-tree" aria-hidden="true"></i> Wood products less than 1.5 metres</li>
             </ul>
             <h2>Unacceptable Items</h2>
-            <ul class="unacceptable-items">
-                <li><i class="fas fa-battery-full"></i> Batteries of any kind</li>
-                <li><i class="fas fa-couch"></i> Bean bags (including polystyrene filling)</li>
-                <li><i class="fas fa-cubes"></i> Bricks and concrete</li>
-                <li><i class="fas fa-car-side"></i> Car parts and tyres</li>
-                <li><i class="fas fa-tools"></i> Commercial builders waste</li>
-                <li><i class="fas fa-leaf"></i> Garden and green waste</li>
-                <li><i class="fas fa-flask"></i> Gas bottles and helium tanks</li>
-                <li><i class="fas fa-trash"></i> General household waste</li>
-                <li><i class="fas fa-wine-glass"></i> Glass and mirrors</li>
-                <li><i class="fas fa-skull-crossbones"></i> Hazardous and flammable wastes</li>
-                <li><i class="fas fa-exclamation-triangle"></i> Lino and fibro sheeting (potential asbestos)</li>
-                <li><i class="fas fa-tint"></i> Liquids (e.g., paint)</li>
+            <ul class="unacceptable-items" role="list">
+                <li><i class="fas fa-battery-full" aria-hidden="true"></i> Batteries of any kind</li>
+                <li><i class="fas fa-couch" aria-hidden="true"></i> Bean bags (including polystyrene filling)</li>
+                <li><i class="fas fa-cubes" aria-hidden="true"></i> Bricks and concrete</li>
+                <li><i class="fas fa-car-side" aria-hidden="true"></i> Car parts and tyres</li>
+                <li><i class="fas fa-tools" aria-hidden="true"></i> Commercial builders waste</li>
+                <li><i class="fas fa-leaf" aria-hidden="true"></i> Garden and green waste</li>
+                <li><i class="fas fa-flask" aria-hidden="true"></i> Gas bottles and helium tanks</li>
+                <li><i class="fas fa-trash" aria-hidden="true"></i> General household waste</li>
+                <li><i class="fas fa-wine-glass" aria-hidden="true"></i> Glass and mirrors</li>
+                <li><i class="fas fa-skull-crossbones" aria-hidden="true"></i> Hazardous and flammable wastes</li>
+                <li><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Lino and fibro sheeting (potential asbestos)</li>
+                <li><i class="fas fa-tint" aria-hidden="true"></i> Liquids (e.g., paint)</li>
             </ul>
-            <p class="note"><i class="fas fa-info-circle"></i> Note: Items must be able to be easily and safely lifted by two people. Piles larger than two cubic metres will not be collected.</p>
-            <p class="source">Source: <a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins/rubbish-collections/kerbside-large-item-collection-service/kerbside-collection-acceptable-items" target="_blank">Brisbane City Council - Kerbside Collection Acceptable Items</a></p>
+            <div class="note"><i class="fas fa-info-circle" aria-hidden="true"></i> <p>Note: Items must be able to be easily and safely lifted by two people. Piles larger than two cubic metres will not be collected.</p></div>
+            <p class="source">Source: <a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins/rubbish-collections/kerbside-large-item-collection-service/kerbside-collection-acceptable-items" target="_blank" rel="noopener">Brisbane City Council - Kerbside Collection Acceptable Items</a></p>
         </section>
-        <div id="feedbackSystem" class="feedback-system">
+
+        <section id="feedbackSystem" class="feedback-system">
             <h2>Feedback</h2>
             <form id="feedbackForm" action="https://formspree.io/f/xovardpb" method="POST">
-                <select id="feedbackType" name="feedbackType" required>
+                <label for="feedbackType" class="sr-only">Feedback type</label>
+                <select id="feedbackType" name="feedbackType" required aria-label="Select feedback type">
                     <option value="">Select feedback type</option>
                     <option value="suggestion">Suggestion</option>
                     <option value="issue">Report an Issue</option>
                     <option value="other">Other</option>
                 </select>
-                <textarea id="feedbackContent" name="feedbackContent" placeholder="Enter your feedback here" required></textarea>
+                <label for="feedbackContent" class="sr-only">Your feedback</label>
+                <textarea id="feedbackContent" name="feedbackContent" placeholder="Enter your feedback here" required aria-label="Enter your feedback"></textarea>
                 <button type="submit">Submit Feedback</button>
             </form>
-        </div>
-        <div id="historicalDataView" class="historical-data">
+        </section>
+
+        <section id="historicalDataView" class="historical-data">
             <h2>Historical Data</h2>
-            <select id="historicalSuburb">
+            <label for="historicalSuburb" class="sr-only">Select suburb for historical data</label>
+            <select id="historicalSuburb" aria-label="Select suburb for historical data">
                 <option value="">Select a suburb</option>
-                <!-- Populate this dynamically with JavaScript -->
             </select>
-            <div id="historicalStats"></div>
-        </div>
-        <div id="councilServices" class="council-services">
+            <div id="historicalStats" role="region" aria-live="polite"></div>
+        </section>
+
+        <section id="councilServices" class="council-services">
             <h2>Related Council Services</h2>
-            <ul>
-                <li><a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins" target="_blank">Rubbish, Tips and Bins</a></li>
-                <li><a href="https://www.brisbane.qld.gov.au/clean-and-green/green-home-and-community/sustainable-gardening" target="_blank">Sustainable Gardening</a></li>
-                <li><a href="https://www.brisbane.qld.gov.au/clean-and-green/green-home-and-community/green-heart-schools" target="_blank">Clean and Green Schools</a></li>
-                <li><a href="https://www.brisbane.qld.gov.au/about-council/governance-and-strategy/vision-and-strategy/brisbane-vision/our-clean-green-city" target="_blank">Clean, Green, Sustainable 2017-2031</a></li>
+            <ul role="list">
+                <li><a href="https://www.brisbane.qld.gov.au/clean-and-green/rubbish-tips-and-bins" target="_blank" rel="noopener">Rubbish, Tips and Bins</a></li>
+                <li><a href="https://www.brisbane.qld.gov.au/clean-and-green/green-home-and-community/sustainable-gardening" target="_blank" rel="noopener">Sustainable Gardening</a></li>
+                <li><a href="https://www.brisbane.qld.gov.au/clean-and-green/green-home-and-community/green-heart-schools" target="_blank" rel="noopener">Clean and Green Schools</a></li>
+                <li><a href="https://www.brisbane.qld.gov.au/about-council/governance-and-strategy/vision-and-strategy/brisbane-vision/our-clean-green-city" target="_blank" rel="noopener">Clean, Green, Sustainable 2017-2031</a></li>
             </ul>
-        </div>
+        </section>
     </main>
     <footer>
         <p>&copy; 2024 Bakari Mustafa. All rights reserved.</p>
     </footer>
+
+    <!-- Screen reader only class -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+
     <script src="js/script.js"></script>
 </body>
 </html>
