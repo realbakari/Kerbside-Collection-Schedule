@@ -54,45 +54,60 @@
         <!-- Data Visualizations Section -->
         <section class="data-visualizations">
             <h2><i class="fas fa-chart-bar" aria-hidden="true"></i> Data Insights</h2>
+            <p class="insights-description">
+                <i class="fas fa-info-circle" style="color: hsl(var(--info));"></i>
+                Click on any statistic card below to filter collections. Charts can be toggled to reduce clutter.
+            </p>
 
             <!-- Statistics Dashboard -->
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card" data-filter="total" title="Total number of unique suburbs in both councils">
                     <div class="stat-icon" style="background: hsl(var(--info) / 0.1);">
                         <i class="fas fa-map-marked-alt" style="color: hsl(var(--info));"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-value" id="totalSuburbs">0</div>
                         <div class="stat-label">Total Suburbs</div>
+                        <div class="stat-description">All serviced suburbs</div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" data-filter="completed" title="Click to show only completed collections">
                     <div class="stat-icon" style="background: hsl(var(--success) / 0.1);">
                         <i class="fas fa-check-circle" style="color: hsl(var(--success));"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-value" id="completedCollections">0</div>
                         <div class="stat-label">Completed</div>
+                        <div class="stat-description">Past collections</div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" data-filter="upcoming" title="Click to show only upcoming collections">
                     <div class="stat-icon" style="background: hsl(221.2 83.2% 53.3% / 0.1);">
                         <i class="fas fa-clock" style="color: hsl(221.2 83.2% 53.3%);"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-value" id="upcomingCollections">0</div>
                         <div class="stat-label">Upcoming</div>
+                        <div class="stat-description">Future collections</div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" data-filter="thisWeek" title="Click to show only collections happening this week">
                     <div class="stat-icon" style="background: hsl(48 96% 89%);">
                         <i class="fas fa-calendar-week" style="color: hsl(45 93% 47%);"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-value" id="thisWeekCollections">0</div>
                         <div class="stat-label">This Week</div>
+                        <div class="stat-description">Next 7 days</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Chart Toggle Button -->
+            <div class="chart-toggle-section">
+                <button id="toggleCharts" class="chart-toggle-button" aria-label="Toggle charts visibility">
+                    Hide Charts <i class="fas fa-chevron-up"></i>
+                </button>
             </div>
 
             <!-- Charts Grid -->
@@ -128,6 +143,40 @@
                         <canvas id="monthlyDistributionChart" role="img" aria-label="Bar chart showing collections by month"></canvas>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Collection Reminder Banner -->
+        <div id="collectionReminder" class="collection-reminder" style="display: none;" role="alert" aria-live="polite">
+            <div class="reminder-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div class="reminder-content">
+                <p id="reminderMessage"></p>
+            </div>
+            <button id="closeReminder" class="reminder-close" aria-label="Close reminder" onclick="hideCollectionReminder()">
+                &times;
+            </button>
+        </div>
+
+        <!-- Reminder Setup Section -->
+        <section class="reminder-setup">
+            <h3><i class="fas fa-bell"></i> Collection Reminders</h3>
+            <p class="reminder-description">Get notified when your suburb's collection is approaching</p>
+            <div class="reminder-controls">
+                <label for="reminderSuburb" class="sr-only">Select suburb for reminders</label>
+                <select id="reminderSuburb" aria-label="Select suburb for reminders">
+                    <option value="">Select your suburb</option>
+                </select>
+                <button id="enableReminder" class="btn-primary">
+                    <i class="fas fa-bell"></i> Enable Reminder
+                </button>
+                <button id="disableReminder" class="btn-secondary" style="display: none;">
+                    <i class="fas fa-bell-slash"></i> Disable Reminder
+                </button>
+            </div>
+            <div id="reminderStatus" class="reminder-status">
+                <i class="fas fa-bell-slash"></i> No reminders set
             </div>
         </section>
 

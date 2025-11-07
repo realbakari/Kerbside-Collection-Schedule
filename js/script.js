@@ -18,6 +18,7 @@ const log = (...args) => CONFIG.DEBUG && console.log(...args);
 // State
 let allData = [];
 let currentPage = 1;
+let activeStatFilter = null; // Track which stat card filter is active
 
 const brisbaneCitySuburbs = [
     "Acacia Ridge", "Albion", "Alderley", "Algester", "Annerley", "Anstead", "Archerfield", "Ascot", "Ashgrove", "Aspley",
@@ -292,7 +293,30 @@ function filterData() {
             (completionFilter === 'completed' && isCompleted) ||
             (completionFilter === 'not-completed' && !isCompleted);
 
-        return matchesSearch && matchesWeek && matchesDate && matchesCompletion;
+        // Apply stat card filter
+        let matchesStatFilter = true;
+        if (activeStatFilter) {
+            const currentWeekStart = new Date();
+            const currentWeekEnd = new Date();
+            currentWeekEnd.setDate(currentWeekEnd.getDate() + 7);
+
+            switch (activeStatFilter) {
+                case 'completed':
+                    matchesStatFilter = isCompleted;
+                    break;
+                case 'upcoming':
+                    matchesStatFilter = !isCompleted;
+                    break;
+                case 'thisWeek':
+                    const collectionDateObj = new Date(item.date_of_collection);
+                    matchesStatFilter = collectionDateObj >= currentWeekStart && collectionDateObj <= currentWeekEnd;
+                    break;
+                default:
+                    matchesStatFilter = true;
+            }
+        }
+
+        return matchesSearch && matchesWeek && matchesDate && matchesCompletion && matchesStatFilter;
     });
 
     const matchingSuburbs = allSuburbs.filter(suburb =>
@@ -356,8 +380,61 @@ function clearFilters() {
     document.getElementById('weekFilter').value = '';
     document.getElementById('dateFilter').value = '';
     document.getElementById('completionFilter').value = '';
+    activeStatFilter = null;
+    updateStatCardActiveStates();
     currentPage = 1;
     renderCards(allData);
+}
+
+// Stat Card Interactivity
+function handleStatCardClick(filterType) {
+    log('Stat card clicked:', filterType);
+
+    // If clicking the same card, clear the filter
+    if (activeStatFilter === filterType) {
+        activeStatFilter = null;
+    } else {
+        activeStatFilter = filterType;
+    }
+
+    updateStatCardActiveStates();
+    filterAndSortData();
+}
+
+function updateStatCardActiveStates() {
+    // Remove active class from all stat cards
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.classList.remove('active');
+    });
+
+    // Add active class to the active stat card
+    if (activeStatFilter) {
+        const activeCard = document.querySelector(`.stat-card[data-filter="${activeStatFilter}"]`);
+        if (activeCard) {
+            activeCard.classList.add('active');
+        }
+    }
+}
+
+// Chart Toggle
+function toggleCharts() {
+    const chartsSection = document.querySelector('.charts-grid');
+    const toggleButton = document.getElementById('toggleCharts');
+    const toggleIcon = toggleButton.querySelector('i');
+
+    if (chartsSection.classList.contains('collapsed')) {
+        chartsSection.classList.remove('collapsed');
+        toggleButton.textContent = 'Hide Charts ';
+        toggleIcon.className = 'fas fa-chevron-up';
+        toggleButton.appendChild(toggleIcon);
+        safeLocalStorageSet('chartsCollapsed', 'false');
+    } else {
+        chartsSection.classList.add('collapsed');
+        toggleButton.textContent = 'Show Charts ';
+        toggleIcon.className = 'fas fa-chevron-down';
+        toggleButton.appendChild(toggleIcon);
+        safeLocalStorageSet('chartsCollapsed', 'true');
+    }
 }
 
 // Suburb List Population
@@ -652,6 +729,135 @@ function initNotification() {
     } else {
         notification.style.display = 'none';
     }
+}
+
+// Collection Reminder System
+function initReminderSystem() {
+    const savedSuburb = safeLocalStorageGet('reminderSuburb');
+    const reminderSelect = document.getElementById('reminderSuburb');
+    const enableReminderBtn = document.getElementById('enableReminder');
+    const disableReminderBtn = document.getElementById('disableReminder');
+    const reminderStatus = document.getElementById('reminderStatus');
+
+    if (savedSuburb && reminderSelect) {
+        reminderSelect.value = savedSuburb;
+        updateReminderStatus(savedSuburb);
+    }
+
+    if (enableReminderBtn) {
+        enableReminderBtn.addEventListener('click', () => {
+            const selectedSuburb = reminderSelect.value;
+            if (selectedSuburb) {
+                safeLocalStorageSet('reminderSuburb', selectedSuburb);
+                updateReminderStatus(selectedSuburb);
+                checkUpcomingCollection(selectedSuburb);
+            }
+        });
+    }
+
+    if (disableReminderBtn) {
+        disableReminderBtn.addEventListener('click', () => {
+            localStorage.removeItem('reminderSuburb');
+            if (reminderSelect) reminderSelect.value = '';
+            updateReminderStatus(null);
+            hideCollectionReminder();
+        });
+    }
+
+    // Check for upcoming collection on load
+    if (savedSuburb) {
+        checkUpcomingCollection(savedSuburb);
+    }
+}
+
+function updateReminderStatus(suburb) {
+    const reminderStatus = document.getElementById('reminderStatus');
+    const enableBtn = document.getElementById('enableReminder');
+    const disableBtn = document.getElementById('disableReminder');
+
+    if (suburb) {
+        reminderStatus.innerHTML = `<i class="fas fa-bell"></i> Reminders enabled for <strong>${suburb}</strong>`;
+        reminderStatus.className = 'reminder-status active';
+        if (enableBtn) enableBtn.style.display = 'none';
+        if (disableBtn) disableBtn.style.display = 'inline-flex';
+    } else {
+        reminderStatus.innerHTML = '<i class="fas fa-bell-slash"></i> No reminders set';
+        reminderStatus.className = 'reminder-status';
+        if (enableBtn) enableBtn.style.display = 'inline-flex';
+        if (disableBtn) disableBtn.style.display = 'none';
+    }
+}
+
+function checkUpcomingCollection(suburb) {
+    const suburbData = allData.filter(item => item.suburb === suburb);
+    if (suburbData.length === 0) return;
+
+    const currentDate = normalizeDate(new Date());
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+    threeDaysFromNow.setHours(0, 0, 0, 0);
+
+    // Find next collection
+    const upcomingCollections = suburbData
+        .filter(item => {
+            const collectionDate = normalizeDate(item.date_of_collection);
+            return collectionDate >= currentDate;
+        })
+        .sort((a, b) => new Date(a.date_of_collection) - new Date(b.date_of_collection));
+
+    if (upcomingCollections.length > 0) {
+        const nextCollection = upcomingCollections[0];
+        const collectionDate = normalizeDate(nextCollection.date_of_collection);
+        const itemsOutDate = normalizeDate(nextCollection.items_out_on_footpath);
+
+        // Check if collection is within 3 days
+        if (collectionDate <= threeDaysFromNow) {
+            showCollectionReminder(nextCollection);
+        }
+    }
+}
+
+function showCollectionReminder(collectionData) {
+    const reminderBanner = document.getElementById('collectionReminder');
+    if (!reminderBanner) return;
+
+    const collectionDate = formatDate(collectionData.date_of_collection);
+    const itemsOutDate = formatDate(collectionData.items_out_on_footpath);
+    const daysUntil = Math.ceil((normalizeDate(collectionData.date_of_collection) - normalizeDate(new Date())) / (1000 * 60 * 60 * 24));
+
+    let message = '';
+    if (daysUntil === 0) {
+        message = `<strong>Today!</strong> Collection for ${collectionData.suburb} is today (${collectionDate})`;
+    } else if (daysUntil === 1) {
+        message = `<strong>Tomorrow!</strong> Collection for ${collectionData.suburb} is tomorrow (${collectionDate}). Put items out by ${itemsOutDate}.`;
+    } else {
+        message = `<strong>Upcoming!</strong> Collection for ${collectionData.suburb} is in ${daysUntil} days (${collectionDate}). Put items out by ${itemsOutDate}.`;
+    }
+
+    document.getElementById('reminderMessage').innerHTML = message;
+    reminderBanner.style.display = 'flex';
+}
+
+function hideCollectionReminder() {
+    const reminderBanner = document.getElementById('collectionReminder');
+    if (reminderBanner) {
+        reminderBanner.style.display = 'none';
+    }
+}
+
+function populateReminderSuburbs() {
+    const reminderSelect = document.getElementById('reminderSuburb');
+    if (!reminderSelect) return;
+
+    const uniqueSuburbs = [...new Set(allData.map(item => item.suburb))].sort();
+
+    reminderSelect.innerHTML = '<option value="">Select your suburb</option>';
+    uniqueSuburbs.forEach(suburb => {
+        const option = document.createElement('option');
+        option.value = suburb;
+        option.textContent = suburb;
+        reminderSelect.appendChild(option);
+    });
 }
 
 // Data Visualizations
@@ -1053,6 +1259,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Initialize stat card click handlers
+    document.querySelectorAll('.stat-card').forEach(card => {
+        const filterType = card.getAttribute('data-filter');
+        if (filterType) {
+            card.addEventListener('click', () => handleStatCardClick(filterType));
+            card.style.cursor = 'pointer';
+        }
+    });
+
+    // Initialize chart toggle
+    const toggleButton = document.getElementById('toggleCharts');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleCharts);
+    }
+
     fetchData()
         .then(() => {
             loadPreferences();
@@ -1063,6 +1284,24 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize data visualizations
             updateStatistics();
             initCharts();
+
+            // Initialize reminder system
+            populateReminderSuburbs();
+            initReminderSystem();
+
+            // Restore chart collapsed state
+            const chartsCollapsed = safeLocalStorageGet('chartsCollapsed');
+            if (chartsCollapsed === 'true') {
+                const chartsSection = document.querySelector('.charts-grid');
+                const toggleButton = document.getElementById('toggleCharts');
+                if (chartsSection && toggleButton) {
+                    chartsSection.classList.add('collapsed');
+                    toggleButton.textContent = 'Show Charts ';
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-chevron-down';
+                    toggleButton.appendChild(icon);
+                }
+            }
         })
         .catch(error => log('Failed to initialize:', error));
 });
