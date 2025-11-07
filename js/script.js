@@ -19,6 +19,8 @@ const log = (...args) => CONFIG.DEBUG && console.log(...args);
 let allData = [];
 let currentPage = 1;
 let activeStatFilter = null; // Track which stat card filter is active
+let trackedSuburbs = []; // Array of tracked suburbs
+let activeTrackedSuburb = null; // Currently selected tracked suburb
 
 const brisbaneCitySuburbs = [
     "Acacia Ridge", "Albion", "Alderley", "Algester", "Annerley", "Anstead", "Archerfield", "Ascot", "Ashgrove", "Aspley",
@@ -515,6 +517,104 @@ function updateCountdowns() {
     });
 }
 
+// Calendar Export Functions
+function generateICS(collections, filename = 'kerbside_collection.ics') {
+    if (!collections || collections.length === 0) {
+        alert('No collections to export');
+        return;
+    }
+
+    // RFC 5545 iCalendar format
+    let icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Kerbside Collection Schedule//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:Kerbside Collection Schedule',
+        'X-WR-TIMEZONE:Australia/Brisbane',
+        'X-WR-CALDESC:Brisbane and Logan City Council kerbside collection schedule'
+    ];
+
+    collections.forEach(item => {
+        if (item.isPlaceholder) return;
+
+        const collectionDate = new Date(item.date_of_collection);
+        const itemsOutDate = new Date(item.items_out_on_footpath);
+
+        // Format dates for iCalendar (YYYYMMDD)
+        const formatICSDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}${month}${day}`;
+        };
+
+        // Generate unique ID
+        const uid = `${item.suburb}-${item.week}-${formatICSDate(collectionDate)}@kerbside-schedule.local`;
+
+        // Collection Day Event
+        icsContent.push('BEGIN:VEVENT');
+        icsContent.push(`UID:${uid}`);
+        icsContent.push(`DTSTAMP:${formatICSDate(new Date())}T000000Z`);
+        icsContent.push(`DTSTART;VALUE=DATE:${formatICSDate(collectionDate)}`);
+        icsContent.push(`SUMMARY:Kerbside Collection - ${item.suburb}`);
+        icsContent.push(`DESCRIPTION:Kerbside cleanup collection for ${item.suburb} (Week ${item.week})\\n${item.source} City Council\\n\\nPut items out by: ${formatDate(item.items_out_on_footpath)}`);
+        icsContent.push(`LOCATION:${item.suburb}, Queensland, Australia`);
+        icsContent.push('STATUS:CONFIRMED');
+        icsContent.push('TRANSP:TRANSPARENT');
+        icsContent.push('END:VEVENT');
+
+        // Reminder Event (Items Out Date)
+        icsContent.push('BEGIN:VEVENT');
+        icsContent.push(`UID:${uid}-reminder`);
+        icsContent.push(`DTSTAMP:${formatICSDate(new Date())}T000000Z`);
+        icsContent.push(`DTSTART;VALUE=DATE:${formatICSDate(itemsOutDate)}`);
+        icsContent.push(`SUMMARY:Put Items Out - ${item.suburb}`);
+        icsContent.push(`DESCRIPTION:Reminder: Put kerbside collection items out today for collection on ${formatDate(item.date_of_collection)}\\n${item.source} City Council`);
+        icsContent.push(`LOCATION:${item.suburb}, Queensland, Australia`);
+        icsContent.push('STATUS:CONFIRMED');
+        icsContent.push('TRANSP:TRANSPARENT');
+        icsContent.push('BEGIN:VALARM');
+        icsContent.push('TRIGGER:-PT1H');
+        icsContent.push('ACTION:DISPLAY');
+        icsContent.push(`DESCRIPTION:Put items out for kerbside collection`);
+        icsContent.push('END:VALARM');
+        icsContent.push('END:VEVENT');
+    });
+
+    icsContent.push('END:VCALENDAR');
+
+    // Create and download file
+    const icsString = icsContent.join('\r\n');
+    const blob = new Blob([icsString], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+}
+
+function exportToCalendar() {
+    const filteredData = filterData().filter(item => !item.isPlaceholder);
+    if (filteredData.length === 0) {
+        alert('No collections to export. Try adjusting your filters.');
+        return;
+    }
+    generateICS(filteredData, 'kerbside_collection_schedule.ics');
+}
+
+function exportSuburbToCalendar(suburb) {
+    const suburbData = allData.filter(item => item.suburb === suburb && !item.isPlaceholder);
+    if (suburbData.length === 0) {
+        alert(`No collection data found for ${suburb}`);
+        return;
+    }
+    generateICS(suburbData, `${suburb.replace(/\s+/g, '_')}_collection.ics`);
+}
+
 // Export Functions
 function waitForJsPDF(callback) {
     if (window.jspdf) {
@@ -728,6 +828,239 @@ function initNotification() {
         }, 10000);
     } else {
         notification.style.display = 'none';
+    }
+}
+
+// Multi-Suburb Tracking System
+function loadTrackedSuburbs() {
+    const saved = safeLocalStorageGet('trackedSuburbs');
+    if (saved) {
+        try {
+            trackedSuburbs = JSON.parse(saved);
+            log('Loaded tracked suburbs:', trackedSuburbs);
+        } catch (e) {
+            log('Error parsing tracked suburbs:', e);
+            trackedSuburbs = [];
+        }
+    }
+    updateTrackedSuburbsUI();
+}
+
+function saveTrackedSuburbs() {
+    safeLocalStorageSet('trackedSuburbs', JSON.stringify(trackedSuburbs));
+}
+
+function addTrackedSuburb(suburb) {
+    if (!suburb || suburb.trim() === '') {
+        alert('Please select a suburb');
+        return;
+    }
+
+    if (trackedSuburbs.includes(suburb)) {
+        alert(`${suburb} is already being tracked`);
+        return;
+    }
+
+    trackedSuburbs.push(suburb);
+    saveTrackedSuburbs();
+    updateTrackedSuburbsUI();
+    log('Added tracked suburb:', suburb);
+}
+
+function removeTrackedSuburb(suburb) {
+    trackedSuburbs = trackedSuburbs.filter(s => s !== suburb);
+    if (activeTrackedSuburb === suburb) {
+        activeTrackedSuburb = null;
+        document.getElementById('searchInput').value = '';
+        filterAndSortData();
+    }
+    saveTrackedSuburbs();
+    updateTrackedSuburbsUI();
+    log('Removed tracked suburb:', suburb);
+}
+
+function setActiveTrackedSuburb(suburb) {
+    activeTrackedSuburb = suburb;
+    document.getElementById('searchInput').value = suburb;
+    filterAndSortData();
+    updateTrackedSuburbsUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateTrackedSuburbsUI() {
+    const container = document.getElementById('trackedSuburbsList');
+    if (!container) return;
+
+    if (trackedSuburbs.length === 0) {
+        container.innerHTML = '<p class="no-tracked-suburbs">No suburbs tracked yet. Add your first suburb above!</p>';
+        return;
+    }
+
+    container.innerHTML = '';
+    trackedSuburbs.forEach(suburb => {
+        const suburbData = allData.filter(item => item.suburb === suburb && !item.isPlaceholder);
+        const nextCollection = suburbData
+            .filter(item => new Date(item.date_of_collection) >= new Date())
+            .sort((a, b) => new Date(a.date_of_collection) - new Date(b.date_of_collection))[0];
+
+        const card = document.createElement('div');
+        card.className = `tracked-suburb-card ${activeTrackedSuburb === suburb ? 'active' : ''}`;
+
+        card.innerHTML = `
+            <div class="tracked-suburb-header">
+                <h4>${suburb}</h4>
+                <button class="tracked-suburb-remove" aria-label="Remove ${suburb}" title="Remove ${suburb}">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tracked-suburb-info">
+                ${nextCollection ? `
+                    <p class="next-collection">
+                        <i class="fas fa-calendar-alt"></i>
+                        <strong>Next:</strong> ${formatDate(nextCollection.date_of_collection)}
+                    </p>
+                    <p class="items-out">
+                        <i class="fas fa-box"></i>
+                        <strong>Items out:</strong> ${formatDate(nextCollection.items_out_on_footpath)}
+                    </p>
+                ` : '<p class="no-upcoming">No upcoming collections</p>'}
+            </div>
+            <div class="tracked-suburb-actions">
+                <button class="btn-view" title="View collections for ${suburb}">
+                    <i class="fas fa-eye"></i> View
+                </button>
+                <button class="btn-export-calendar" title="Export ${suburb} to calendar">
+                    <i class="fas fa-calendar-plus"></i> Calendar
+                </button>
+                <button class="btn-share" title="Share ${suburb} schedule">
+                    <i class="fas fa-share-alt"></i> Share
+                </button>
+            </div>
+        `;
+
+        // Add event listeners
+        card.querySelector('.tracked-suburb-remove').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm(`Remove ${suburb} from tracked suburbs?`)) {
+                removeTrackedSuburb(suburb);
+            }
+        });
+
+        card.querySelector('.btn-view').addEventListener('click', () => {
+            setActiveTrackedSuburb(suburb);
+        });
+
+        card.querySelector('.btn-export-calendar').addEventListener('click', () => {
+            exportSuburbToCalendar(suburb);
+        });
+
+        card.querySelector('.btn-share').addEventListener('click', () => {
+            shareSuburbSchedule(suburb);
+        });
+
+        container.appendChild(card);
+    });
+}
+
+function initTrackedSuburbsSystem() {
+    loadTrackedSuburbs();
+
+    const addButton = document.getElementById('addTrackedSuburb');
+    const suburbSelect = document.getElementById('trackSuburbSelect');
+
+    if (addButton && suburbSelect) {
+        addButton.addEventListener('click', () => {
+            const suburb = suburbSelect.value;
+            if (suburb) {
+                addTrackedSuburb(suburb);
+                suburbSelect.value = '';
+            }
+        });
+    }
+}
+
+function populateTrackSuburbSelect() {
+    const select = document.getElementById('trackSuburbSelect');
+    if (!select) return;
+
+    const uniqueSuburbs = [...new Set(allData.map(item => item.suburb))].sort();
+    select.innerHTML = '<option value="">Select a suburb to track</option>';
+    uniqueSuburbs.forEach(suburb => {
+        const option = document.createElement('option');
+        option.value = suburb;
+        option.textContent = suburb;
+        select.appendChild(option);
+    });
+}
+
+// Share & Collaboration Features
+function shareSuburbSchedule(suburb) {
+    const url = `${window.location.origin}${window.location.pathname}?suburb=${encodeURIComponent(suburb)}`;
+
+    if (navigator.share) {
+        // Use Web Share API if available
+        navigator.share({
+            title: `${suburb} Kerbside Collection Schedule`,
+            text: `Check out the kerbside collection schedule for ${suburb}`,
+            url: url
+        }).catch(err => log('Error sharing:', err));
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(url).then(() => {
+            showShareModal(suburb, url);
+        }).catch(err => {
+            log('Error copying to clipboard:', err);
+            showShareModal(suburb, url);
+        });
+    }
+}
+
+function showShareModal(suburb, url) {
+    const modal = document.getElementById('shareModal');
+    const suburbName = document.getElementById('shareSuburbName');
+    const shareUrl = document.getElementById('shareUrl');
+    const copyBtn = document.getElementById('copyShareUrl');
+
+    if (!modal) return;
+
+    if (suburbName) suburbName.textContent = suburb;
+    shareUrl.value = url;
+    modal.style.display = 'flex';
+
+    copyBtn.onclick = () => {
+        shareUrl.select();
+        navigator.clipboard.writeText(url).then(() => {
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Link';
+            }, 2000);
+        });
+    };
+}
+
+function closeShareModal() {
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function printSchedule() {
+    window.print();
+}
+
+// Check URL parameters for shared suburb
+function checkURLParameters() {
+    const params = new URLSearchParams(window.location.search);
+    const suburb = params.get('suburb');
+
+    if (suburb) {
+        log('Suburb from URL:', suburb);
+        document.getElementById('searchInput').value = suburb;
+        filterAndSortData();
+
+        // Scroll to results
+        setTimeout(() => {
+            document.querySelector('.search-section')?.scrollIntoView({ behavior: 'smooth' });
+        }, 500);
     }
 }
 
@@ -1274,6 +1607,27 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleButton.addEventListener('click', toggleCharts);
     }
 
+    // Initialize export to calendar button
+    const exportCalendarBtn = document.getElementById('exportCalendar');
+    if (exportCalendarBtn) {
+        exportCalendarBtn.addEventListener('click', exportToCalendar);
+    }
+
+    // Initialize print button
+    const printBtn = document.getElementById('printSchedule');
+    if (printBtn) {
+        printBtn.addEventListener('click', printSchedule);
+    }
+
+    // Initialize share modal close
+    const closeShareBtn = document.getElementById('closeShareModal');
+    if (closeShareBtn) {
+        closeShareBtn.addEventListener('click', closeShareModal);
+    }
+
+    // Check URL parameters for shared suburb link
+    checkURLParameters();
+
     fetchData()
         .then(() => {
             loadPreferences();
@@ -1288,6 +1642,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize reminder system
             populateReminderSuburbs();
             initReminderSystem();
+
+            // Initialize multi-suburb tracking
+            populateTrackSuburbSelect();
+            initTrackedSuburbsSystem();
 
             // Restore chart collapsed state
             const chartsCollapsed = safeLocalStorageGet('chartsCollapsed');
